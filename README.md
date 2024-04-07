@@ -1,7 +1,7 @@
 # CRUD MERN
 Repositorio para el laboratorio sobre CRUD de Ingeniería de Software II.
 
-##Tecnologías usadas
+## Tecnologías usadas
 - MySQL
 - Express
 - React
