@@ -5,4 +5,5 @@ const router = Router();
 
 router.get("/personas", getPersonas);
 
+
 export default router;

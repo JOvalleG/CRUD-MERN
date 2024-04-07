@@ -5,7 +5,7 @@ import {dirname, join} from 'path'
 import {fileURLToPath} from 'url'
 
 import indexRoutes from "./routes/index.routes.js";
-import taskRoutes from "./routes/personas.routes.js";
+import personasRoutes from "./routes/personas.routes.js";
 
 dotenv.config();
 
@@ -18,7 +18,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use(indexRoutes);
-app.use(taskRoutes);
+app.use(personasRoutes);
+
 
 app.use(express.static(join(__dirname, './frontend/dist')))
 
