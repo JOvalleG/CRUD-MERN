@@ -199,34 +199,20 @@ function FormularioFamilia(props) {
         }));
     };
 
+    useEffect(() => {console.log(member)},[member])
+
     const agregarFormulario = () => {
-        setVariable(1)
-
-        // Crear un nuevo objeto de miembro
-        const nuevoMiembro = { ...member };
-
-        // Agregar el nuevo miembro a la lista de miembros
-        setMembers(prevMembers => [...prevMembers, nuevoMiembro]);
-
-        setMember({
-            documento: '',
-            primer_nombre: '',
-            segundo_nombre: '',
-            primer_apellido: '',
-            segundo_apellido: '',
-            edad: '',
-            departamento: '',
-            municipio: '',
-            direccion: '',
-        });
 
         const handleMemberInput = (event) => {
-            const { name, value } = event.target;
-            setMember(prevMember => ({
-                ...prevMember,
-                [name]: value,
-            }));
+            setMember({
+                ...member,
+                [event.target.name]:  event.target.value
+            })
         };
+
+        const handleMemberSubmit = () => {
+            setMembers([...members, member])
+        }
 
         const nuevoFormulario = (
             <div key={formularios.lenght}>
@@ -362,35 +348,19 @@ function FormularioFamilia(props) {
                                 onChange={handleDireccionMemberInput} />
                         </div>
                     </div>
+                    <div className="row">
+                        <div className="offset-sm-4 col-sm-4 d-grid">
+                            <button onClick={handleMemberSubmit} className="btn btn-primary btn-sm me-3">Guardar datos del integrante</button>
+                        </div>
+                    </div>
             </div>
         )
         setFormularios([...formularios, nuevoFormulario])
     }
 
-    useEffect(() => {
-        setJson({
-            cabeza_de_hogar: cabeza,
-            family_members: members
-        })
-    }, [members,cabeza])
-
-    useEffect(() => {
-        if(json){
-            console.log(json)
-        }
-    }, [json])
-
     function handleSumit() {
-        if (variable === 1) {
-            setMembers([...members, member])
-        }
-        console.log(JSON.stringify(json))
-        if (!cabeza.documento || !cabeza.primer_nombre || !cabeza.primer_apellido || !cabeza.edad || !cabeza.departamento || !cabeza.municipio) {
-            alert('Todos los campos son obligatorios')
-            return;
-        }
-
-        fetch("http://localhost:4000/familia", {
+        console.log(members)
+        /*fetch("http://localhost:4000/familia", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -406,7 +376,7 @@ function FormularioFamilia(props) {
         .then(data => props.showList())
         .catch(error => {
             console.error(error);
-        })
+        })*/
     }
 
     return (
