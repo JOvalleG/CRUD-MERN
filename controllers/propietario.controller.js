@@ -4,10 +4,11 @@ import { pool } from "../db.js";
 export const getPropietarios = async (req, res) => {
     try {
         const [rows] = await pool.query(`
-            SELECT Propietario.*, Persona.*, Vivienda.*
+            SELECT Propietario.*, Persona.*, Vivienda.*, Municipio.*
             FROM Propietario
             LEFT JOIN Persona ON Propietario.id_persona = Persona.id_persona
             LEFT JOIN Vivienda ON Propietario.id_vivienda = Vivienda.id_vivienda
+            LEFT JOIN Municipio ON Vivienda.id_municipio = Municipio.id_municipio
         `);
 
         // Organize the data into a JSON structure
@@ -20,8 +21,10 @@ export const getPropietarios = async (req, res) => {
                 },
                 vivienda: {
                     id_vivienda: row.id_vivienda,
+                    direccion: row.direccion,
                     id_municipio: row.id_municipio,
-                    direccion: row.direccion
+                    nombre_municipio: row.nombre_municipio,
+                    departamento: row.departamento
                     // Include other Vivienda fields as needed
                 }
             };
@@ -41,10 +44,11 @@ export const getPropietario = async (req, res) => {
         const id_vivienda = req.params.id_vivienda;
 
         const [rows] = await pool.query(`
-            SELECT Propietario.*, Persona.*, Vivienda.*
+            SELECT Propietario.*, Persona.*, Vivienda.*, Municipio.*
             FROM Propietario
             LEFT JOIN Persona ON Propietario.id_persona = Persona.id_persona
             LEFT JOIN Vivienda ON Propietario.id_vivienda = Vivienda.id_vivienda
+            LEFT JOIN Municipio ON Vivienda.id_municipio = Municipio.id_municipio
             WHERE Propietario.id_persona = ? AND Propietario.id_vivienda = ?
         `, [id_propietario, id_vivienda]);
 
@@ -68,8 +72,10 @@ export const getPropietario = async (req, res) => {
             },
             vivienda: {
                 id_vivienda: rows[0].id_vivienda,
+                direccion: rows[0].direccion,
                 id_municipio: rows[0].id_municipio,
-                direccion: rows[0].direccion
+                nombre_municipio: rows[0].nombre_municipio,
+                departamento: rows[0].departamento
                 // Include other Vivienda fields as needed
             }
         };
