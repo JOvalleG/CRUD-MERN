@@ -4,7 +4,9 @@ import { pool } from "../db.js";
 export const getSalud = async (req, res) => {
     try {
         const [result] = await pool.query(
-            "SELECT * FROM Salud"
+            `SELECT Salud.*, Persona.*
+            FROM Salud
+            LEFT JOIN Persona ON Salud.id_persona = Persona.id_persona`
         )
         res.json(result);
     } catch (error) {
