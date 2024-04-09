@@ -6,6 +6,10 @@ import {fileURLToPath} from 'url'
 
 import indexRoutes from "./routes/index.routes.js";
 import personasRoutes from "./routes/personas.routes.js";
+import saludRoutes from "./routes/salud.routes.js";
+import viviendaRoutes from "./routes/vivienda.routes.js";
+import municipioRoutes from "./routes/municipio.routes.js";
+import propietarioRoutes from "./routes/propietarios.routes.js"
 
 dotenv.config();
 
@@ -19,6 +23,10 @@ app.use(express.json());
 
 app.use(indexRoutes);
 app.use(personasRoutes);
+app.use(saludRoutes);
+app.use(viviendaRoutes);
+app.use(municipioRoutes);
+app.use(propietarioRoutes);
 
 
 app.use(express.static(join(__dirname, './frontend/dist')))
