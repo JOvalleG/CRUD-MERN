@@ -106,7 +106,7 @@ function SaludForm(props) {
         const salud = Object.fromEntries(formData.entries());
         
         //validacion
-        if (!salud.nombre_entidad || !salud.tipo_cobertura || !salud.tipo_regimen || !salud.documento) {
+        if (!salud.nombre_entidad || !salud.tipo_cobertura || !salud.tipo_regimen ) {
             console.log("Todos los campos son requeridos");
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
@@ -114,19 +114,12 @@ function SaludForm(props) {
                 </div>
             )
             return;
-        } else {
-            console.log("Creado con exito");
-            setErrorMessage(
-                <div className="alert alert-success" role="alert">
-                    Creado con exito!
-                </div>
-            )
-        }
+        } 
         
         if (props.salud.id_salud) {
             // editar salud
             fetch("http://localhost:4000/salud/" + props.salud.id_salud, {
-                method: "PATCH",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -170,7 +163,20 @@ function SaludForm(props) {
         <>
         <h2 className="text-center mb-3">{props.salud.id_salud ? "Editar usuario del sistema de salud" : "Crear un nuevo usuario del sistema de salud"}</h2>
 
+        <div className="text-center row mt-3">
+        <div className="col-lg-7 mx-auto">
+            <h4>Documento de identidad</h4>
+            <p>{props.salud.documento}</p>
+        </div>
+        </div>
 
+        <div className="text-center row mt-3">
+        <div className="col-lg-7 mx-auto">
+            <h4>Nombre del paciente</h4>
+            <p>{props.salud.primer_nombre} {props.salud.primer_apellido}</p>
+        </div>
+        </div>
+        
         <div className="row">
             <div className="col-lg-6 mx-auto">
 
@@ -185,13 +191,13 @@ function SaludForm(props) {
                     </div>
                 </div>}
 
-                <div className="row mb-3">
-                    <label className="col-sm-4 col-form-label">Documento de identidad</label>
-                    <div className="col-sm-8">
-                        <input className="form-control" name="documento"
-                        defaultValue={props.salud.documento} />
-                    </div>
+                {!props.salud.id_salud && <div className="row mb-3">
+                <label className="col-sm-4 col-form-label">Documento de identidad</label>
+                <div className="col-sm-8">
+                    <input className="form-control" name="documento"
+                    defaultValue={props.salud.documento} />
                 </div>
+                </div>}
                 
                 <div className="row mb-3">
                     <label className="col-sm-4 col-form-label">Nombre de la entidad</label>

@@ -25,7 +25,7 @@ function PersonaLista(props) {
     const [persona, setPersona] = useState([]);
 
     function fetchPersona() {
-        fetch("http://localhost:4000/persona")
+        fetch("http://localhost:4000/personas")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Ha ocurrido un error");
@@ -43,7 +43,7 @@ function PersonaLista(props) {
     useEffect(() => fetchPersona(), []);
 
     function deletePersona(id) {
-        fetch("http://localhost:4000/persona/" + id, {
+        fetch("http://localhost:4000/personas/" + id, {
             method: "DELETE"
         })
         .then(response => {
@@ -59,7 +59,6 @@ function PersonaLista(props) {
     return (
         <>
         <h2 className="text-center mb-3">Lista de Personas</h2>
-        <button onClick={() => props.showForm({})} type="button" className="btn btn-primary me-2">Crear</button>
         <button onClick={() => fetchPersona()} type="button" className="btn btn-outline-primary me-2">Refrescar</button>
         <table className="table">
             <thead>
@@ -111,7 +110,7 @@ function PersonaForm(props) {
         const persona = Object.fromEntries(formData.entries());
         
         //validacion
-        if (!persona.nombre_municipio || !persona.direccion) {
+        if (!persona.documento || !persona.edad || !persona.primer_nombre || !persona.primer_apellido) {
             console.log("Todos los campos son requeridos");
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
@@ -119,18 +118,11 @@ function PersonaForm(props) {
                 </div>
             )
             return;
-        } else {
-            console.log("Creado con exito");
-            setErrorMessage(
-                <div className="alert alert-success" role="alert">
-                    Creado con exito!
-                </div>
-            )
-        }
+        } 
         
         if (props.persona.id_persona) {
             // editar persona
-            fetch("http://localhost:4000/persona/" + props.persona.id_persona, {
+            fetch("http://localhost:4000/personas/" + props.persona.id_persona, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -150,7 +142,7 @@ function PersonaForm(props) {
         else {
 
         //crear nueva persona
-        fetch("http://localhost:4000/persona", {
+        fetch("http://localhost:4000/personas", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -251,7 +243,7 @@ function PersonaForm(props) {
             </form>
             </div>
         </div>
-
+        
 
         </>
     );
