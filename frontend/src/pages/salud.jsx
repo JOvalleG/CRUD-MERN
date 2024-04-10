@@ -163,19 +163,19 @@ function SaludForm(props) {
         <>
         <h2 className="text-center mb-3">{props.salud.id_salud ? "Editar usuario del sistema de salud" : "Crear un nuevo usuario del sistema de salud"}</h2>
 
-        <div className="text-center row mt-3">
+        {props.salud.id_salud && <div className="text-center row mt-3">
         <div className="col-lg-7 mx-auto">
             <h4>Documento de identidad</h4>
             <p>{props.salud.documento}</p>
         </div>
-        </div>
+        </div>}
 
-        <div className="text-center row mt-3">
+        {props.salud.id_salud && <div className="text-center row mt-3">
         <div className="col-lg-7 mx-auto">
             <h4>Nombre del paciente</h4>
             <p>{props.salud.primer_nombre} {props.salud.primer_apellido}</p>
         </div>
-        </div>
+        </div>}
         
         <div className="row">
             <div className="col-lg-6 mx-auto">

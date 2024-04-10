@@ -59,6 +59,7 @@ function PersonaLista(props) {
     return (
         <>
         <h2 className="text-center mb-3">Lista de Personas</h2>
+        <button onClick={() => props.showForm({})} type="button" className="btn btn-primary me-2">Crear</button>
         <button onClick={() => fetchPersona()} type="button" className="btn btn-outline-primary me-2">Refrescar</button>
         <table className="table">
             <thead>
