@@ -14,7 +14,7 @@ router.get("/municipio/:depto" , getMunicipiosDepto);
 
 router.get("/municipio/:id", getMunicipio);
 
-router.put("/municipio/:id", updateMunicipio);
+router.put("/municipio/update/:id", updateMunicipio);
 
 router.post("/municipio", createMunicipio)
 

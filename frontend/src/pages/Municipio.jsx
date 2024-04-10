@@ -133,7 +133,7 @@ function FormularioMunicipios(props){
                 return;
             }
 
-            fetch("http://localhost:4000/municipio/" + props.municipio.id_municipio, {
+            fetch("http://localhost:4000/municipio/update/" + props.municipio.id_municipio, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -153,7 +153,7 @@ function FormularioMunicipios(props){
                 }
                     Swal.fire({
                         title:"<strong>¡Actualización correcta!</strong>",
-                        html: `<i>¡La persona ha sido registrada como propietaria de la vivienda!</i>`,
+                        html: `<i>¡Se ha actualizado la información del municipio!</i>`,
                         icon: 'success',
                         timer: 4000
                     })
@@ -195,7 +195,7 @@ function FormularioMunicipios(props){
                 }
                     Swal.fire({
                         title:"<strong>¡Actualización correcta!</strong>",
-                        html: `<i>¡La persona ha sido registrada como propietaria de la vivienda!</i>`,
+                        html: `<i>¡El municipio ha sido creado con éxito!</i>`,
                         icon: 'success',
                         timer: 4000
                     })
