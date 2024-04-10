@@ -22,32 +22,32 @@ export function Navbar() {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link" aria-current="page" to="/familia">
+              <Link className="nav-link" aria-current="page" to="/client/familia">
                 Familia
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/vivienda">
+              <Link className="nav-link" to="/client/vivienda">
                 Vivienda
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/propietario">
+              <Link className="nav-link" to="/client/propietario">
                 Propietario
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/municipio">
+              <Link className="nav-link" to="/client/municipio">
                 Municipio
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/salud">
+              <Link className="nav-link" to="/client/salud">
                 Salud
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/persona">
+              <Link className="nav-link" to="/client/persona">
                 Personas
               </Link>
             </li>

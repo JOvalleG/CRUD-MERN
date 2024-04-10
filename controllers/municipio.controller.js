@@ -76,3 +76,31 @@ export const getMunicipiosDepto = async (req, res) => {
         return res.status(500).json({message: error.message})
     }
 }
+
+export const createMunicipio = async (req, res) => {
+    try {
+        const {nombre_municipio,departamento,documento} = req.body;
+        const id_persona_query = await pool.query('SELECT id_persona FROM Persona WHERE documento = ?', [documento]);
+        if (id_persona_query[0].length === 0) {
+            return res.status(404).json({ message: "No existe una persona con el documento ingresado." });
+        }else{
+            const id_persona = id_persona_query[0][0]["id_persona"]
+            
+            const existingGobernadorInstance = await pool.query('SELECT id_gobernador FROM Municipio WHERE id_gobernador = ?', [id_persona]);
+            
+            if (existingGobernadorInstance[0].length > 0) {
+                return res.status(400).json({ message: "Esta persona ya es Gobernador de otro municipio" });
+            }else{
+                pool.query('INSERT INTO Municipio(nombre_municipio, departamento, id_gobernador) VALUES (?, ?, ?)',
+                [
+                    nombre_municipio,
+                    departamento,
+                    id_persona
+                ])
+                return res.send("¡Municipio registrado con éxito!");
+            }
+        }
+    } catch (error) {
+        return res.status(500).json({message: error.message});
+    }
+}
