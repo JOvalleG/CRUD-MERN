@@ -80,7 +80,7 @@ const update_hogar = async (req, res, id_persona) => {
     //Si no existe se crea la nueva vivienda
     //console.log("vivienda", result_vivienda);
     //if(check_existence(res, result_vivienda.length, "") === false){
-    if (resul_vivienda.length === 0) {
+    if (result_vivienda.length === 0) {
       await pool.query(
         "INSERT INTO Vivienda(id_municipio, direccion) VALUES (?, ?)",
         [id_municipio[0].id_municipio, req.body.vivienda.direccion]
