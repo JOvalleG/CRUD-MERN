@@ -361,7 +361,7 @@ function ViviendaForm(props) {
                 </div>}
                 
                 {!props.vivienda.id_vivienda && <div className='row mb-3'>
-                        <label className='col-sm-4 col-form-label'>Departamento que habita*</label>
+                        <label className='col-sm-4 col-form-label'>Departamento*</label>
                         <div className='col-sm-8'>
                             <select className='form-select' 
                                 name='departamento'
