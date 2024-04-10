@@ -70,27 +70,27 @@ const update_hogar = async (req, res, id_persona) => {
       "SELECT id_municipio FROM Municipio WHERE nombre_municipio = ?",
       [req.body.vivienda.nombre_municipio]
     );
-
     //Se busca si existe una vivienda que tenga el minicipio y la dirección ingresada,
     //es decir, si la vivienda existe en la base de datos
     var [result_vivienda] = await pool.query(
       "SELECT * FROM Vivienda WHERE id_municipio = ? AND direccion = ?",
       [id_municipio[0].id_municipio, req.body.vivienda.direccion]
     );
-
+    //console.log(result_vivienda);
     //Si no existe se crea la nueva vivienda
-    if(check_existence(res, result_vivienda.length, "") === false){
-      [result_vivienda] = await pool.query(
+    //console.log("vivienda", result_vivienda);
+    //if(check_existence(res, result_vivienda.length, "") === false){
+    if (resul_vivienda.length === 0) {
+      await pool.query(
         "INSERT INTO Vivienda(id_municipio, direccion) VALUES (?, ?)",
         [id_municipio[0].id_municipio, req.body.vivienda.direccion]
       );
-
       // Se busca la id de la nueva casa creada
       const [new_vivienda] = await pool.query(
-        "SELECT id_vivienda FROM Vivienda WHERE direccion = ?",
-        [req.body.vivienda.direccion]
+        "SELECT id_vivienda FROM Vivienda WHERE direccion = ? AND id_municipio = ?",
+        [req.body.vivienda.direccion, id_municipio[0].id_municipio]
       );
-
+      //console.log(new_vivienda);
       //Usando la id de la nueva vivienda creada, se modifica el id_vivienda dentro de persona
       var result_hogar_persona = await pool.query(
         "UPDATE Persona SET id_vivienda = ? WHERE id_persona = ?",

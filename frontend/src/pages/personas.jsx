@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import Swal from 'sweetalert2'
 
 function Personas() {
     const [content, setContent] = useState(<PersonaLista showForm={showForm} />);
@@ -106,27 +106,8 @@ function PersonaLista(props) {
 }
 
 function PersonaForm(props) {
-
-    const [formularios, setFormularios] = useState([])
     const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState('')
     const [municipios, setMunicipios] = useState([])
-    const [variable, setVariable] = useState(0)
-
-    const [json, setJson] = useState()
-
-    const [members, setMembers] = useState([])
-
-    const [cabeza, setCabeza] = useState({
-        documento: '',
-        primer_nombre: '',
-        segundo_nombre: '',
-        primer_apellido: '',
-        segundo_apellido: '',
-        edad: '',
-        departamento: '',
-        municipio: '',
-        direccion: '',
-    })
 
     const [direccion, setDireccion] = useState({
         via: '',
@@ -136,38 +117,16 @@ function PersonaForm(props) {
         tercer_numero: '',
     })
 
-
-    const handleCabezaInput = (event) => {
-        setCabeza({
-          ...cabeza,
-          [event.target.name]: event.target.value,
-        });
-      };
-
     const handleDireccionInput = (event) => {
         setDireccion({
             ...direccion,
              [event.target.name]: event.target.value,
         })
-
-        const nuevaDireccion = Object.values({
-            ...direccion,
-            [event.target.name]: event.target.value,
-        }).join(' ').toLowerCase().trim();
-
-        setCabeza({
-            ...cabeza,
-            direccion: nuevaDireccion,
-          });
     }
 
     const handleDepartamentoChange = (e) =>{
         const departamento = e.target.value;
         setDepartamentoSeleccionado(departamento)
-        setCabeza({
-            ...cabeza,
-            departamento: departamento,
-          });
     }
 
     function fetchMunicipios (depto){
@@ -179,80 +138,13 @@ function PersonaForm(props) {
             return response.json()
        })
        .then(data => {
-            console.log(data)
             setMunicipios(data)
         })
        .catch(error => console.log(error))
     }
     
-    useEffect(() => fetchMunicipios(cabeza.departamento), [cabeza.departamento])
+    useEffect(() => fetchMunicipios(departamentoSeleccionado), [departamentoSeleccionado])
 
-    const [member, setMember] = useState({
-        documento: '',
-        primer_nombre: '',
-        segundo_nombre: '',
-        primer_apellido: '',
-        segundo_apellido: '',
-        edad: '',
-        departamento: '',
-        municipio: '',
-        direccion: '',
-    })
-
-    const [direccionMember, setDireccionMember] = useState({
-        via: '',
-        primer_numero: '',
-        cardinalidad: '',
-        segundo_numero: '',
-        tercer_numero: '',
-    })
-
-    const [departamentoSeleccionadoM, setDepartamentoSeleccionadoM] = useState('')
-    const [municipiosM, setMunicipiosM] = useState([])
-
-    const handleDireccionMemberInput = (event) => {
-        const { name, value } = event.target;
-        setDireccionMember(prevDireccionMember => ({
-            ...prevDireccionMember,
-            [name]: value,
-        }));
-    
-        const nuevaDireccion = Object.values({
-            ...direccionMember,
-            [name]: value,
-        }).join(' ').toLowerCase().trim();
-    
-        setMember(prevMember => ({
-            ...prevMember,
-            direccion: nuevaDireccion,
-        }));
-    };
-
-    const handleDepartamentoMemberChange = (e) => {
-        const departamento = e.target.value;
-        setDepartamentoSeleccionadoM(departamento);
-        setMember(prevMember => ({
-            ...prevMember,
-            departamento: departamento,
-        }));
-    };
-
-    useEffect(() => {console.log(member)},[member])
-
-
-        const handleMemberInput = (event) => {
-            setMember({
-                ...member,
-                [event.target.name]:  event.target.value
-            })
-        };
-
-        const handleMemberSubmit = () => {
-            setMembers([...members, member])
-        }
-
-    
-    
 //PRUEBA DEPARTAMENTOS
     
     const [errorMessage, setErrorMessage] = useState("");
@@ -260,16 +152,6 @@ function PersonaForm(props) {
     function handleSubmit(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
-        // const persona = {
-        //     documento: formData.get('documento'),
-        //     edad: formData.get('edad'),
-        //     primer_nombre: formData.get('primer_nombre'),
-        //     segundo_nombre: formData.get('segundo_nombre'),
-        //     primer_apellido: formData.get('primer_apellido'),
-        //     segundo_apellido: formData.get('segundo_apellido'),
-        //     direccion: formData.get('via') + ' ' + formData.get('primer_numero') + ' ' + formData.get('cardinalidad') + ' ' + formData.get('segundo_numero') + ' ' + formData.get('tercero_numero'),
-        //     nombre_municipio: formData.get('nombre_municipio')
-        // };
         
         const persona = {
             primer_nombre: formData.get('primer_nombre'),
@@ -296,15 +178,25 @@ function PersonaForm(props) {
         
         
         //validacion
-        if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido) {
-            console.log("Todos los campos son requeridos");
+        if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido || !vivienda.nombre_municipio) {
+            //console.log(vivienda);
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
-                    Todos los campos son requeridos
+                    Todos los campos con * son requeridos
                 </div>
             )
             return;
-        } 
+        }
+
+        const edad = parseInt(persona.edad)
+        if (isNaN(edad) || !Number.isInteger(edad) || edad < 0) {
+            setErrorMessage(
+                <div className="alert alert-warning" role="alert">
+                    Ls edad debe ser un número entero mayor o igual a cero.
+                </div>
+            );
+            return;
+        }
         
         if (props.persona.id_persona) {
             // editar persona
@@ -315,10 +207,23 @@ function PersonaForm(props) {
                 },
                 body: JSON.stringify(persona2)
             })
-            .then(response => {
+            .then(async response => {
                 if (!response.ok) {
+                    const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Actualización incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
                     throw new Error("Ha ocurrido un error");
                 }
+                Swal.fire({
+                    title:"<strong>¡Actualización correcta!</strong>",
+                    html: "<i>¡Se ha editado a la persona con éxito!</i>",
+                    icon: 'success',
+                    timer: 4000
+                })
                 return response.json()
             })
             .then(data => props.showList())
@@ -335,10 +240,23 @@ function PersonaForm(props) {
             },
             body: JSON.stringify(persona2)
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
+                const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Creación incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
                 throw new Error("Ha ocurrido un error");
             }
+            Swal.fire({
+                title:"<strong>¡Creación correcta!</strong>",
+                html: "<i>¡Se ha creado a la persona con éxito!</i>",
+                icon: 'success',
+                timer: 4000
+            })
             return response.json()
         })
         .then(data => props.showList())
@@ -347,34 +265,9 @@ function PersonaForm(props) {
         }
     }
 
-    function handleSumit() {
-        console.log(members)
-        /*fetch("http://localhost:4000/familia", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(json)
-        })
-        .then(response => {
-            if (!response.ok) {
-                console.log(response)
-            }
-            return response.json();
-        })
-        .then(data => props.showList())
-        .catch(error => {
-            console.error(error);
-        })*/
-    }
-    
-    
-    
     return (
         <>
         <h2 className="text-center mb-3">{props.persona.id_persona ? "Editar persona" : "Crear una nueva persona"}</h2>
-
-
         <div className="row">
             <div className="col-lg-6 mx-auto">
 
@@ -404,7 +297,7 @@ function PersonaForm(props) {
                     <label className="col-sm-4 col-form-label">Edad*</label>
                     <div className="col-sm-8">
                         <input className="form-control" name="edad"
-                        defaultValue={props.persona.edad} />
+                        defaultValue={props.persona.edad}/>
                     </div>
                 </div>
 
@@ -441,47 +334,45 @@ function PersonaForm(props) {
                 </div>
 
                 <div className='row mb-3'>
-                        <label className='col-sm-4 col-form-label'>Departamento que habita*</label>
-                        <div className='col-sm-8'>
-                            <select className='form-select' 
-                                name='departamento'
-                                defaultValue={props.persona.departamento}
-                                onChange={handleDepartamentoChange} >
-                                <option value="">Selecciona un departamento</option>
-                                <option value="Antioquia">Antioquia</option>
-                                <option value="Atlántico">Atlántico</option>
-                                <option value="Bolívar">Bolívar</option>
-                                <option value="Bogotá">Bogotá</option>
-                                <option value="Boyacá">Boyacá</option>
-                                <option value="Caldas">Caldas</option>
-                                <option value="Cauca">Cauca</option>
-                                <option value="Cesar">Cesar</option>
-                                <option value="Chocó">Chocó</option>
-                                <option value="Córdoba">Córdoba</option>
-                                <option value="Cundinamarca">Cundinamarca</option>
-                                <option value="Huila">Huila</option>
-                                <option value="La Guajira">La Guajira</option>
-                                <option value="Magdalena">Magdalena</option>
-                                <option value="Meta">Meta</option>
-                                <option value="Nariño">Nariño</option>
-                                <option value="Norte de Santander">Norte de Santander</option>
-                                <option value="Quindío">Quindío</option>
-                                <option value="Risaralda">Risaralda</option>
-                                <option value="Santander">Santander</option>
-                                <option value="Sucre">Sucre</option>
-                                <option value="Tolima">Tolima</option>
-                                <option value="Valle del Cauca">Valle del Cauca</option>
-                            </select>
-                        </div>
+                    <label className='col-sm-4 col-form-label'>Departamento que habita*</label>
+                    <div className='col-sm-8'>
+                        <select className='form-select' 
+                            name='departamento'
+                            defaultValue={props.persona.departamento}
+                            onChange={handleDepartamentoChange} >
+                            <option value="">Selecciona un departamento</option>
+                            <option value="Antioquia">Antioquia</option>
+                            <option value="Atlántico">Atlántico</option>
+                            <option value="Bolívar">Bolívar</option>
+                            <option value="Bogotá">Bogotá</option>
+                            <option value="Boyacá">Boyacá</option>
+                            <option value="Caldas">Caldas</option>
+                            <option value="Cauca">Cauca</option>
+                            <option value="Cesar">Cesar</option>
+                            <option value="Chocó">Chocó</option>
+                            <option value="Córdoba">Córdoba</option>
+                            <option value="Cundinamarca">Cundinamarca</option>
+                            <option value="Huila">Huila</option>
+                            <option value="La Guajira">La Guajira</option>
+                            <option value="Magdalena">Magdalena</option>
+                            <option value="Meta">Meta</option>
+                            <option value="Nariño">Nariño</option>
+                            <option value="Norte de Santander">Norte de Santander</option>
+                            <option value="Quindío">Quindío</option>
+                            <option value="Risaralda">Risaralda</option>
+                            <option value="Santander">Santander</option>
+                            <option value="Sucre">Sucre</option>
+                            <option value="Tolima">Tolima</option>
+                            <option value="Valle del Cauca">Valle del Cauca</option>
+                        </select>
                     </div>
-
+                </div>
                     <div className='row mb-3'>
                         <label className='col-sm-4 col-form-label'>Municipio donde habita*</label>
                         <div className='col-sm-8'>
                             <select className='form-select' 
                                 name='nombre_municipio'
-                                defaultValue={props.persona.nombre_municipio} 
-                                onChange={handleCabezaInput}>
+                                defaultValue={props.persona.nombre_municipio}>
                             <option value="">Selecciona un municipio</option>
                             {municipios.map((municipio, index) => (
                                 <option key={index} value={municipio.nombre_municipio}>{municipio.nombre_municipio}</option>
@@ -523,12 +414,15 @@ function PersonaForm(props) {
                     </div>
 
                 <div className="row">
-                    <div className="offset-sm-4 col-sm-4 d-grid">
-                        <button onClick={handleSumit} type="submit" className="btn btn-primary me-2">Crear</button>
-                    </div>
-                
                     <div className="col-sm-4 d-grid">
-                        <button onClick={() => props.showList()} type="button" className="btn btn-secondary me-2">Cancelar</button>
+                        {props.persona.id_persona ? 
+                        <button type="submit" className="btn btn-primary me-2">Editar</button>
+                        : 
+                        <button type="submit" className="btn btn-primary me-2">Crear</button>
+                        }
+                    </div>
+                    <div className="offset-sm-4 col-sm-4 d-grid">
+                    <button onClick={() => props.showList()} type="button" className="btn btn-secondary me-2">Cancelar</button>
                     </div>
                 </div>
 
