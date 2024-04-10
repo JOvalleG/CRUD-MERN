@@ -39,17 +39,24 @@ export const update_persona = async (req, res) => {
 export const create_persona = async (req, res) => {
   console.log(req.body);
   try{
-    //const [persona, vivienda] = req.body;
+    // Se recibe el json del front
     const persona = req.body.persona;
-    console.log(persona);	
     const vivienda = req.body.vivienda;
+
+    // Se crea un registro con una nueva persona
     const [persona_result] = await pool.query(
       "INSERT INTO Persona(documento, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, edad) VALUES (?, ?, ?, ?, ?, ?)",
       [persona.documento, persona.primer_nombre, persona.segundo_nombre, persona.primer_apellido, persona.segundo_apellido, parseInt(persona.edad, 10)]
     );
-    console.log("Persona insertada correctamente:", persona_result);
-    return;
-    update_hogar(req, res, persona_result.id_persona);
+
+    // Se busca la id de la nueva persona
+    const [new_persona] = await pool.query(
+      "SELECT id_persona FROM Persona WHERE documento = ?",
+      [persona.documento]
+    );
+
+    // Revisar la información del hogar
+    update_hogar(req, res, new_persona[0].id_persona);
 
   }catch (error){
     return res.status(500).json({message : error.message});
@@ -77,11 +84,17 @@ const update_hogar = async (req, res, id_persona) => {
         "INSERT INTO Vivienda(id_municipio, direccion) VALUES (?, ?)",
         [id_municipio[0].id_municipio, req.body.vivienda.direccion]
       );
-      console.log(result_vivienda.id_vivienda, id_persona);
+
+      // Se busca la id de la nueva casa creada
+      const [new_vivienda] = await pool.query(
+        "SELECT id_vivienda FROM Vivienda WHERE direccion = ?",
+        [req.body.vivienda.direccion]
+      );
+
       //Usando la id de la nueva vivienda creada, se modifica el id_vivienda dentro de persona
       var result_hogar_persona = await pool.query(
         "UPDATE Persona SET id_vivienda = ? WHERE id_persona = ?",
-        [result_vivienda.id_vivienda, id_persona]
+        [new_vivienda[0].id_vivienda, id_persona]
       );
       return;
     }
