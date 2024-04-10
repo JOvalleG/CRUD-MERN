@@ -10,6 +10,7 @@ import saludRoutes from "./routes/salud.routes.js";
 import viviendaRoutes from "./routes/vivienda.routes.js";
 import municipioRoutes from "./routes/municipio.routes.js";
 import propietarioRoutes from "./routes/propietarios.routes.js"
+import familiaRoutes from "./routes/familia.routes.js"
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(saludRoutes);
 app.use(viviendaRoutes);
 app.use(municipioRoutes);
 app.use(propietarioRoutes);
+app.use(familiaRoutes);
 
 
 app.use(express.static(join(__dirname, './frontend/dist')))
