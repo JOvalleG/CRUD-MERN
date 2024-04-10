@@ -37,7 +37,7 @@ export const update_persona = async (req, res) => {
 }
 
 export const create_persona = async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   try{
     // Se recibe el json del front
     const persona = req.body.persona;
