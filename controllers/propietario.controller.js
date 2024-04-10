@@ -4,31 +4,22 @@ import { pool } from "../db.js";
 export const getPropietarios = async (req, res) => {
     try {
         const [rows] = await pool.query(`
-            SELECT Propietario.*, Persona.*, Vivienda.*, Municipio.*
+            SELECT Propietario.id_vivienda, Persona.documento, Persona.id_persona, Municipio.departamento, Municipio.nombre_municipio, Vivienda.direccion
             FROM Propietario
             LEFT JOIN Persona ON Propietario.id_persona = Persona.id_persona
             LEFT JOIN Vivienda ON Propietario.id_vivienda = Vivienda.id_vivienda
             LEFT JOIN Municipio ON Vivienda.id_municipio = Municipio.id_municipio
         `);
 
-        // Organize the data into a JSON structure
-        const propietariosData = rows.map(row => {
-            return {
-                persona: {
-                    id_persona: row.id_persona,
-                    documento: row.documento,
-                    // Include other Persona fields as needed
-                },
-                vivienda: {
-                    id_vivienda: row.id_vivienda,
-                    direccion: row.direccion,
-                    id_municipio: row.id_municipio,
-                    nombre_municipio: row.nombre_municipio,
-                    departamento: row.departamento
-                    // Include other Vivienda fields as needed
-                }
-            };
-        });
+        // Organize the data into the desired JSON structure
+        const propietariosData = rows.map(row => ({
+            id_vivienda: row.id_vivienda,
+            documento: row.documento,
+            id_persona: row.id_persona,
+            departamento: row.departamento,
+            nombre_municipio: row.nombre_municipio,
+            direccion: row.direccion
+        }));
 
         // Send the JSON response
         res.json(propietariosData);
@@ -135,7 +126,7 @@ export const eliminarPropietario = async (req, res) => {
         // Step 3: Delete the entry from the Propietario table
         await pool.query(
             "DELETE FROM Propietario WHERE id_vivienda = ?",
-            [id_propietario, id_vivienda]
+            [id_vivienda]
         );
 
         // Send success response

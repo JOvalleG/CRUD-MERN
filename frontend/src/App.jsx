@@ -7,6 +7,7 @@ import Personas from "./pages/personas";
 //import Familias from "./pages/Familia";
 import Familias from "./pages/Familiav2"
 import Municipios from "./pages/Municipio";
+import Propietario from "./pages/Propietario";
 import { Navbar, Footer } from "./components/layout";
 
 function App() {
@@ -16,11 +17,12 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/familia" element={<Familias />} />
-        <Route path="/salud" element={<Salud />} />
-        <Route path="/vivienda" element={<Vivienda />} />
-        <Route path="/persona" element={<Personas />} />
-        <Route path="/municipio" element={<Municipios />} />
+        <Route path="/client/familia" element={<Familias />} />
+        <Route path="/client/salud" element={<Salud />} />
+        <Route path="/client/vivienda" element={<Vivienda />} />
+        <Route path="/client/persona" element={<Personas />} />
+        <Route path="/client/municipio" element={<Municipios />} />
+        <Route path="/client/propietario" element={<Propietario />} />
       </Routes>
       <Footer />
     </>

@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from 'react';
 import { useState } from 'react';
+import Swal from 'sweetalert2'
 
 function Municipios() {
     const [content, setContent] = useState(<ListaMunicipios showForm={showForm} />)
@@ -72,7 +73,7 @@ function ListaMunicipios(props) {
     return (
         <>
         <h2 className='text-center mb-3'>Lista de Municipios</h2>
-        <button onClick={() => props.showForm()} className="btn btn-primary me-2">Crear</button>
+        <button onClick={() => props.showForm({})} className="btn btn-primary me-2">Crear</button>
         <button onClick={() => fetchMunicipios()} className="btn btn-outline-primary me-2">Refresh</button>
         <form className="d-flex" onSubmit={busquedaDepto}>
             <input className="form-control" placeholder="Buscar por departamento" value={depto} onChange={handleDeptoChange} />
@@ -102,7 +103,6 @@ function ListaMunicipios(props) {
                             <td>{municipio.documento}</td>
                             <td style={{width: "10px", whiteSpace: "nowrap"}}>
                                 <button onClick={() => props.showForm(municipio)} type="button" className='btn btn-primary btn-sm me-2'>Editar</button>
-                                <button type="button" className='btn btn-danger btn-sm'>Borrar</button>
                             </td>
                         </tr>
                     ))}
@@ -121,17 +121,18 @@ function FormularioMunicipios(props){
         const formData = new FormData(event.target)
         const municipio = Object.fromEntries(formData.entries())
 
-        //validacion
-        if (!municipio.nombre_municipio || !municipio.departamento || !municipio.documento) {
+        if (props.municipio.id_municipio) {
+
+            //validacion
+            if (!municipio.nombre_municipio || !municipio.departamento || !municipio.documento) {
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
                     Todos los campos son requeridos
                 </div>
             )
-            return;
-        }
+                return;
+            }
 
-        if (props.municipio.id_municipio) {
             fetch("http://localhost:4000/municipio/" + props.municipio.id_municipio, {
                 method: "PUT",
                 headers: {
@@ -141,21 +142,67 @@ function FormularioMunicipios(props){
             })
             .then(async (response) => {
                 if (!response.ok) {
-                    const errorMessage = await response.json();
-                    setErrorMessage(
-                        <div className="alert alert-warning" role="alert">
-                            {errorMessage.message}
-                        </div>
-                    )
+                    const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Actualización incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
                     throw new Error("Ha ocurrido un error");
                 }
+                    Swal.fire({
+                        title:"<strong>¡Actualización correcta!</strong>",
+                        html: `<i>¡La persona ha sido registrada como propietaria de la vivienda!</i>`,
+                        icon: 'success',
+                        timer: 4000
+                    })
                 return response.json()
             })
             .then((data) => props.showList())
             .catch((error) => console.log("aqui"))
         }
         else{
-            console.log()
+
+            //validacion
+            if (!municipio.nombre_municipio || !municipio.departamento) {
+                setErrorMessage(
+                    <div className="alert alert-warning" role="alert">
+                        Los campos de nombre y Departamento son obligatorios
+                    </div>
+                )
+                    return;
+                }
+
+            //crear municipio
+            fetch("http://localhost:4000/municipio/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(municipio)
+            })
+            .then(async (response) => {
+                if (!response.ok) {
+                    const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Actualización incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
+                    throw new Error("Ha ocurrido un error");
+                }
+                    Swal.fire({
+                        title:"<strong>¡Actualización correcta!</strong>",
+                        html: `<i>¡La persona ha sido registrada como propietaria de la vivienda!</i>`,
+                        icon: 'success',
+                        timer: 4000
+                    })
+                return response.json()
+            })
+            .then((data) => props.showList())
+            .catch((error) => console.log(error))
         }
     }
     return(
