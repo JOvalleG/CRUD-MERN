@@ -41,8 +41,15 @@ function FamiliaLista(props) {
     fetch("http://localhost:4000/familia/" + id_familia, {
       method: "DELETE",
     })
-      .then((response) => {
+      .then(async response => {
         if (!response.ok) {
+          const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Actualización incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
           throw new Error("Ha ocurrido un error");
         }
         Swal.fire({
@@ -195,13 +202,20 @@ function FamiliaForm(props) {
         },
         body: JSON.stringify(data),
       })
-        .then((response) => {
+        .then(async response => {
           if (!response.ok) {
+            const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Actualización incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
             throw new Error("Ha ocurrido un error");
           }
           Swal.fire({
             title: "<strong>¡Actualización correcta!</strong>",
-            html: "<i>¡Registro de familia actualizado exitosamente!</i>",
+            html: "<i>¡La Familia se ha actualizado correctamente!</i>",
             icon: "success",
             timer: 4000,
           });
@@ -285,6 +299,7 @@ function FamiliaForm(props) {
                     </label>
                     <div className="col-sm-4 d-grid">
                       <input
+                        readOnly
                         className="form-control"
                         defaultValue={miembro.documento}
                         onChange={(e) =>

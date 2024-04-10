@@ -57,7 +57,6 @@ export const get_family = async (req, res) =>{
 
 export const create_family = async (req, res) => {
     try {
-        console.log(req.body);
         const { cabeza_familia, family_members } = req.body;
 
         // Verificar que la persona con el documento del cabeza de familia exista y obtener su id_persona
@@ -71,6 +70,22 @@ export const create_family = async (req, res) => {
         }
 
         const id_persona = personaRows[0].id_persona;
+
+        if (family_members && Array.isArray(family_members.members)) {
+            for (const member of family_members.members) {
+                const [personaRows] = await pool.query(
+                    "SELECT id_persona FROM Persona WHERE documento = ?",
+                    [member.documento]
+                );
+
+                if (personaRows.length === 0) {
+                    return res.status(404).json({ message: `No hay una persona registrada con el documento ${member.documento}` });
+                }
+            }
+        } else {
+            // Manejar el caso en que family_members no tenga la estructura esperada
+            return res.status(400).json({ message: "La propiedad 'family_members' debe ser un objeto con la propiedad 'members' que contenga un array." });
+        }
 
         // Crear una nueva familia usando el id del cabeza de familia
         await pool.query(
@@ -128,7 +143,6 @@ export const delete_family = async (req, res) =>{
         }
 
         const id_familia = personaRows[0].id_familia;
-        console.log(id_familia);
         //Se actualiza id_familia a null para todos los miembros de una misma familia
         await pool.query(
             "UPDATE Persona SET id_familia = NULL WHERE id_familia = ?",
@@ -150,7 +164,42 @@ export const delete_family = async (req, res) =>{
 
 export const update_family = async (req, res) => {
     try {
-        console.log(req.body)
+        const { cabeza_familia, family_members } = req.body;
+
+        const [personaRows] = await pool.query(
+            "SELECT id_persona FROM Persona WHERE documento = ?",
+            [cabeza_familia]
+        );
+
+        if (personaRows.length === 0) {
+            return res.status(404).json({ message: "El documento de cabeza de familia no está registrado." });
+        }
+
+        const [personaRows_1] = await pool.query(
+            "SELECT id_familia FROM Familia WHERE id_familia = ?",
+            [req.params.id]
+        );
+
+        if (personaRows_1.length === 0) {
+            return res.status(404).json({ message: "No existe esta familia." });
+        }
+
+        if (family_members && Array.isArray(family_members.members)) {
+            for (const member of family_members.members) {
+                const [personaRows] = await pool.query(
+                    "SELECT id_persona FROM Persona WHERE documento = ?",
+                    [member.documento]
+                );
+
+                if (personaRows.length === 0) {
+                    return res.status(404).json({ message: `No hay una persona registrada con el documento ${member.documento}` });
+                }
+            }
+        } else {
+            // Manejar el caso en que family_members no tenga la estructura esperada
+            return res.status(400).json({ message: "La propiedad 'family_members' debe ser un objeto con la propiedad 'members' que contenga un array." });
+        }
+
         await delete_family_update(req);
         await create_family_update(req);
         res.status(201).json({ message: "¡Familia actualizada!" });
@@ -175,8 +224,8 @@ export const create_family_update = async (req) => {
         console.log(id_persona);
         // Crear una nueva familia usando el id del cabeza de familia
         await pool.query(
-            "INSERT INTO Familia(id_cabeza_familia) VALUES (?)",
-            [id_persona]
+            "UPDATE Familia SET id_cabeza_familia = ? WHERE id_familia = ?",
+            [id_persona,req.params.id]
         );
 
         // Obtener el id_familia recién insertado
@@ -221,16 +270,15 @@ export const delete_family_update = async (req) =>{
             [id_familia]
         );
 
-        //Se elimina la familia con la id_familia ingresada
+        //Se elimina el cabeza de familia
         await pool.query(
-            "DELETE FROM Familia WHERE id_familia = ?",
+            "UPDATE Familia SET id_cabeza_familia = NULL WHERE id_familia = ?",
             [id_familia]
         );
     }catch (error){
         
     }
 }
-
 
 export const add_family_member = async (req, res) => {
     try{
