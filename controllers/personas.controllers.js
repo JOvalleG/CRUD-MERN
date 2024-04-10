@@ -12,26 +12,6 @@ export const get_personas = async (req, res) => {
   }
 }
 
-export const get_persona = async (req, res) => {
-  try{
-    //Se hace una query para que devuelva todos los datos de una persona buscando por la id_persona.
-    const [result] = await pool.query(
-      "SELECT * FROM Persona INNER JOIN Vivienda ON Vivienda.id_vivienda = Persona.id_vivienda INNER JOIN Municipio Vivienda.id_municipio = Municipio.id_municipio WHERE id_persona = ?",
-      [req.body, req.params.id]
-    );
-
-    //Si la persona no existe devuelve una notificacion.
-    if(check_existence(res, result.length, "La persona no se encuentra registrada en la base de datos.") === false){
-      return;
-    }
-
-    // retorna un json con la información de persona y de la vivienda que habita.
-    res.json(result);
-  }catch (error){
-    return res.status(500).json({message : error.message});
-  }
-}
-
 export const update_persona = async (req, res) => {
   try{
     // Actualiza los datos recibidos dentro del json persona
