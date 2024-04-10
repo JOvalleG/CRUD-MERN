@@ -21,7 +21,7 @@ function FamiliaLista(props) {
   const [familia, setfamilia] = useState([]);
 
   function fetchfamilias() {
-    fetch("http://localhost:4000/familia")
+    fetch("https://lab-crud-v6r1.onrender.com/familia")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Ha ocurrido un error");
@@ -38,7 +38,7 @@ function FamiliaLista(props) {
   useEffect(() => fetchfamilias(), []);
 
   function deletefamilia(id_familia) {
-    fetch("http://localhost:4000/familia/" + id_familia, {
+    fetch("https://lab-crud-v6r1.onrender.com/familia/" + id_familia, {
       method: "DELETE",
     })
       .then(async response => {
@@ -195,7 +195,7 @@ function FamiliaForm(props) {
     }
     if (props.familia.id_familia) {
       // editar familia
-      fetch("http://localhost:4000/update_familia/" + props.familia.id_familia, {
+      fetch("https://lab-crud-v6r1.onrender.com/update_familia/" + props.familia.id_familia, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +225,7 @@ function FamiliaForm(props) {
         .catch((error) => console.log("Ha ocurrido un error", error));
     } else {
       //crear nuevo familia
-      fetch("http://localhost:4000/familia", {
+      fetch("https://lab-crud-v6r1.onrender.com/familia", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

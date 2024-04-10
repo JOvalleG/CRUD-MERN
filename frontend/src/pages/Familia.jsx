@@ -21,7 +21,7 @@ function ListaFamilias(props) {
     const [familias, setFamilias] = useState([])
 
     function fetchFamilias (){
-        fetch('http://localhost:4000/familias')
+        fetch('https://lab-crud-v6r1.onrender.com/familias')
        .then(response => {
             if(!response.ok) {
                 console.log("error")
@@ -133,7 +133,7 @@ function FormularioFamilia(props) {
     }
 
     function fetchMunicipios (depto){
-        fetch(`http://localhost:4000/municipio/${depto}`)
+        fetch(`https://lab-crud-v6r1.onrender.com/municipio/${depto}`)
        .then(response => {
             if(!response.ok) {
                 throw Error(response.statusText)
@@ -390,7 +390,7 @@ function FormularioFamilia(props) {
             return;
         }
 
-        fetch("http://localhost:4000/familia", {
+        fetch("https://lab-crud-v6r1.onrender.com/familia", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
