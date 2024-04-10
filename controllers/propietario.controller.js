@@ -40,7 +40,6 @@ export const getPropietarios = async (req, res) => {
 
 export const getPropietario = async (req, res) => {
     try {
-        const id_propietario = req.params.id_propietario;
         const id_vivienda = req.params.id_vivienda;
 
         const [rows] = await pool.query(`
@@ -49,8 +48,8 @@ export const getPropietario = async (req, res) => {
             LEFT JOIN Persona ON Propietario.id_persona = Persona.id_persona
             LEFT JOIN Vivienda ON Propietario.id_vivienda = Vivienda.id_vivienda
             LEFT JOIN Municipio ON Vivienda.id_municipio = Municipio.id_municipio
-            WHERE Propietario.id_persona = ? AND Propietario.id_vivienda = ?
-        `, [id_propietario, id_vivienda]);
+            WHERE Propietario.id_vivienda = ?
+        `, [id_vivienda]);
 
         // If no rows found, return 404
         if (rows.length === 0) {
@@ -120,12 +119,12 @@ export const createPropietario = async (req, res) => {
 
 export const eliminarPropietario = async (req, res) => {
     try {
-        const { id_propietario, id_vivienda } = req.params; // Extracting parameters from route URL
+        const {id_vivienda } = req.params; // Extracting parameters from route URL
 
         // Step 2: Check if there is a corresponding entry in the Propietario table
         const [propietarioRows] = await pool.query(
-            "SELECT * FROM Propietario WHERE id_persona = ? AND id_vivienda = ?",
-            [id_propietario, id_vivienda]
+            "SELECT * FROM Propietario WHERE id_vivienda = ?",
+            [id_vivienda]
         );
 
         // If no matching entry found in Propietario table, return 404
@@ -135,7 +134,7 @@ export const eliminarPropietario = async (req, res) => {
 
         // Step 3: Delete the entry from the Propietario table
         await pool.query(
-            "DELETE FROM Propietario WHERE id_persona = ? AND id_vivienda = ?",
+            "DELETE FROM Propietario WHERE id_vivienda = ?",
             [id_propietario, id_vivienda]
         );
 
@@ -143,5 +142,34 @@ export const eliminarPropietario = async (req, res) => {
         res.json({ message: "¡Propietario eliminado exitosamente!" });
     } catch (error) {
         return res.status(500).json({ message: error.message });
+    }
+}
+
+export const updatePropietario = async (req, res) => {
+    try {
+        const {documento} = req.body;
+
+        const [personaRows] = await pool.query(
+            "SELECT id_persona FROM Persona WHERE documento = ?",
+            [documento]
+        );
+
+        // Check if persona with provided documento exists
+        if (personaRows.length === 0) {
+            return res.status(404).json({ message: "No hay una persona registrada con este documento." });
+        }
+
+        const id_persona = personaRows[0].id_persona;
+        const update = {"id_persona": id_persona};
+
+        // Step 2: Insert a new instance into the Propietario table
+        const result = await pool.query("UPDATE Propietario SET ? WHERE id_vivienda = ?",
+        [
+        update,
+        req.params.id_vivienda
+        ]);
+        return res.status(200).json({message:"¡Registro de propietario actualizado exitosamente!"})
+    } catch (error) {
+        
     }
 }

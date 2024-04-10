@@ -88,7 +88,8 @@ function ListaMunicipios(props) {
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Departamento</th>
-                        <th>Gobernador</th>
+                        <th>ID_Gobernador</th>
+                        <th>Documento_Gobernador</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,6 +99,7 @@ function ListaMunicipios(props) {
                             <td>{municipio.nombre_municipio}</td>
                             <td>{municipio.departamento}</td>
                             <td>{municipio.id_gobernador}</td>
+                            <td>{municipio.documento}</td>
                             <td style={{width: "10px", whiteSpace: "nowrap"}}>
                                 <button onClick={() => props.showForm(municipio)} type="button" className='btn btn-primary btn-sm me-2'>Editar</button>
                                 <button type="button" className='btn btn-danger btn-sm'>Borrar</button>
@@ -120,7 +122,7 @@ function FormularioMunicipios(props){
         const municipio = Object.fromEntries(formData.entries())
 
         //validacion
-        if (!municipio.nombre_municipio || !municipio.departamento || !municipio.id_gobernador) {
+        if (!municipio.nombre_municipio || !municipio.departamento || !municipio.documento) {
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
                     Todos los campos son requeridos
@@ -212,7 +214,7 @@ function FormularioMunicipios(props){
             <div className="row mb-3">
                 <label className="col-sm-4 col-form-label">Documento del Gobernador</label>
                 <div className="col-sm-8">
-                    <input className="form-control" name="documento" defaultValue={props.municipio.id_gobernador}/>
+                    <input className="form-control" name="documento" defaultValue={props.municipio.documento}/>
                 </div>
             </div>
             <div className="row">
