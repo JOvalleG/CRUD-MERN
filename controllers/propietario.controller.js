@@ -84,7 +84,7 @@ export const createPropietario = async (req, res) => {
     
             // Step 1: Retrieve id_persona from Persona table based on documento
             const [personaRows] = await pool.query(
-                "SELECT id_persona FROM Persona WHERE documento = ?",
+                "SELECT * FROM Persona WHERE documento = ?",
                 [documento]
             );
     
@@ -94,6 +94,11 @@ export const createPropietario = async (req, res) => {
             }
     
             const id_persona = personaRows[0].id_persona;
+            const edad_persona = personaRows[0].edad;
+
+            if(edad_persona <= 17){
+                return res.status(404).json({message: "Un menor de edad no puede ser propietario de una vivienda."})
+            }
     
             // Step 2: Insert a new instance into the Propietario table
             await pool.query(
