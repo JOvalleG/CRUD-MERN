@@ -280,15 +280,23 @@ function PersonaForm(props) {
             edad: formData.get('edad')
         };
         
+
+        const via = formData.get('via');
+        const primer_numero = formData.get('primer_numero');
+        const cardinalidad = formData.get('cardinalidad');
+        const segundo_numero = formData.get('segundo_numero');
+        const tercero_numero = formData.get('tercero_numero');
+
         const vivienda = {
             nombre_municipio: formData.get('nombre_municipio'),
-            direccion: formData.get('via') + ' ' + formData.get('primer_numero') + ' ' + formData.get('cardinalidad') + ' ' + formData.get('segundo_numero') + ' ' + formData.get('tercero_numero')
+            direccion: via + ' ' + primer_numero + ' ' + cardinalidad + ' ' + segundo_numero + ' ' + tercero_numero
         };
         
         const persona2 = { persona: persona, vivienda: vivienda };
-
+        
+        
         //validacion
-        if (!persona.documento || !persona.edad || !persona.primer_nombre || !persona.primer_apellido) {
+        if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido) {
             console.log("Todos los campos son requeridos");
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
@@ -366,12 +374,6 @@ function PersonaForm(props) {
         <>
         <h2 className="text-center mb-3">{props.persona.id_persona ? "Editar persona" : "Crear una nueva persona"}</h2>
 
-        {props.persona.id_persona && <div className="text-center row mt-3">
-        <div className="col-lg-7 mx-auto">
-            <h4>Documento de identidad</h4>
-            <p>{props.persona.documento}</p>
-        </div>
-        </div>}
 
         <div className="row">
             <div className="col-lg-6 mx-auto">
@@ -387,13 +389,16 @@ function PersonaForm(props) {
                     </div>
                 </div>}
                 
-                {!props.persona.id_persona && <div className="row mb-3">
+                <div className="row mb-3">
                     <label className="col-sm-4 col-form-label">Documento de identidad*</label>
-                    <div className="col-sm-8">
-                        <input className="form-control" name="documento"
-                        defaultValue={props.persona.documento} />
-                    </div>
-                </div>}
+                        <div className="col-sm-8">
+                        {props.persona.id_persona ? (
+                        <input readOnly className="form-control-plaintext" name="documento" defaultValue={props.persona.documento} />
+                        ) : (
+                        <input className="form-control" name="documento" defaultValue={props.persona.documento} />
+                        )}
+                        </div>
+                </div>
 
                 <div className="row mb-3">
                     <label className="col-sm-4 col-form-label">Edad*</label>
@@ -475,7 +480,7 @@ function PersonaForm(props) {
                         <div className='col-sm-8'>
                             <select className='form-select' 
                                 name='nombre_municipio'
-                                defaultValue={props.persona.nombre_municipio}
+                                defaultValue={props.persona.nombre_municipio} 
                                 onChange={handleCabezaInput}>
                             <option value="">Selecciona un municipio</option>
                             {municipios.map((municipio, index) => (
@@ -484,11 +489,11 @@ function PersonaForm(props) {
                             </select>
                         </div>
                     </div>
-
+                    
                     <div className='row mb-3'>
                         <label className='col-sm-4 col-form-label'>Dirección de residencia (dejar en blanco si no tiene)</label>
                         <div className='col-sm-8 d-flex align-items-center'>
-                            <select className='form-select me-2' name='via' defaultValue={direccion.via} onChange={handleDireccionInput}>
+                            <select className='form-select me-2' name='via' defaultValue={props.persona.direccion ? props.persona.direccion.split(" ")[0] : ""} onChange={handleDireccionInput}>
                                 <option value=""></option>
                                 <option value="calle">Calle</option>
                                 <option value="carrera">Carrera</option>
@@ -497,8 +502,9 @@ function PersonaForm(props) {
                             </select>
                             <input className='form-control me-2' 
                                 name='primer_numero'
+                                defaultValue={props.persona.direccion ? props.persona.direccion.split(" ")[1] : ""}
                                 onChange={handleDireccionInput} />
-                            <select className='form-select me-2' name='cardinalidad' onChange={handleDireccionInput}>
+                            <select className='form-select me-2' name='cardinalidad' defaultValue={props.persona.direccion ? props.persona.direccion.split(" ")[2] : ""} onChange={handleDireccionInput}>
                                 <option value="">Cardinaldad</option>
                                 <option value="sur">Sur</option>
                                 <option value="oriente">Oriente</option>
@@ -506,10 +512,12 @@ function PersonaForm(props) {
                             # 
                             <input className='form-control me-2' 
                                 name='segundo_numero'
+                                defaultValue={props.persona.direccion ? props.persona.direccion.split(" ")[3] : ""}
                                 onChange={handleDireccionInput} />
                             - 
                             <input className='form-control' 
                                 name='tercero_numero'
+                                defaultValue={props.persona.direccion ? props.persona.direccion.split(" ")[4] : ""}
                                 onChange={handleDireccionInput} />
                         </div>
                     </div>
