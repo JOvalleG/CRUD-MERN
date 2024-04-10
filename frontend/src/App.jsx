@@ -5,7 +5,7 @@ import Salud from "./pages/salud";
 import Vivienda from "./pages/vivienda";
 import Personas from "./pages/personas";
 //import Familias from "./pages/Familia";
-import Familias from "./pages/Familiav2"
+import Familia from "./pages/Familiav2"
 import Municipios from "./pages/Municipio";
 import Propietario from "./pages/Propietario";
 import { Navbar, Footer } from "./components/layout";
@@ -17,7 +17,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/client/familia" element={<Familias />} />
+        <Route path="/client/familia" element={<Familia />} />
         <Route path="/client/salud" element={<Salud />} />
         <Route path="/client/vivienda" element={<Vivienda />} />
         <Route path="/client/persona" element={<Personas />} />
