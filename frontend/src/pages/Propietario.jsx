@@ -175,7 +175,7 @@ function PropietarioForm(props) {
             }
             Swal.fire({
                 title:"<strong>¡Creación correcta!</strong>",
-                html: "<i>¡La persona ha sido registrada como propietaria de la vivienda!o</i>",
+                html: "<i>¡La persona ha sido registrada como propietaria de la vivienda!</i>",
                 icon: 'success',
                 timer: 4000
             })
