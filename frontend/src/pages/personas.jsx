@@ -25,7 +25,7 @@ function PersonaLista(props) {
     const [persona, setPersona] = useState([]);
 
     function fetchPersona() {
-        fetch("https://lab-crud-v6r1.onrender.com/personas")
+        fetch("http://localhost:4000/personas")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Ha ocurrido un error");
@@ -43,7 +43,7 @@ function PersonaLista(props) {
     useEffect(() => fetchPersona(), []);
 
     function deletePersona(id) {
-        fetch("https://lab-crud-v6r1.onrender.com/personas/" + id, {
+        fetch("http://localhost:4000/personas/" + id, {
             method: "DELETE"
         })
         .then(response => {
@@ -120,14 +120,43 @@ function PersonaForm(props) {
         primer_numero: '',
         cardinalidad: '',
         segundo_numero: '',
-        tercer_numero: '',
+        tercero_numero: '',
     })
 
+    const [valores, setValores] = useState(() => {
+        const initialValores = {
+            documento: '',
+            edad: '',
+            primer_nombre: '',
+            segundo_nombre: '',
+            primer_apellido: '',
+            segundo_apellido: ''
+        };
+
+        if (props.persona) {
+            return {
+                documento: props.persona.documento || initialValores.documento,
+                edad: props.persona.edad || initialValores.edad,
+                primer_nombre: props.persona.primer_nombre || initialValores.primer_nombre,
+                segundo_nombre: props.persona.segundo_nombre || initialValores.segundo_nombre,
+                primer_apellido: props.persona.primer_apellido || initialValores.primer_apellido,
+                segundo_apellido: props.persona.segundo_apellido || initialValores.segundo_apellido
+            };
+        } else {
+            return initialValores;
+        }
+    });
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        const newValue = value.replace(/\s/g, ''); // Eliminar espacios en blanco
+        setValores({ ...valores, [name]: newValue });
+    };
+
     const handleDireccionInput = (event) => {
-        setDireccion({
-            ...direccion,
-             [event.target.name]: event.target.value,
-        })
+        const { name, value } = event.target;
+        const newValue = value.replace(/\s/g, ''); // Eliminar espacios en blanco
+        setDireccion({ ...direccion, [name]: newValue });
     }
 
     const handleDepartamentoChange = (e) =>{
@@ -136,7 +165,7 @@ function PersonaForm(props) {
     }
 
     function fetchMunicipios (depto){
-        fetch(`https://lab-crud-v6r1.onrender.com/municipio/${depto}`)
+        fetch(`http://localhost:4000/municipio/${depto}`)
        .then(response => {
             if(!response.ok) {
                 throw Error(response.statusText)
@@ -160,20 +189,18 @@ function PersonaForm(props) {
         const formData = new FormData(event.target);
         
         const persona = {
-            primer_nombre: formData.get('primer_nombre'),
-            segundo_nombre: formData.get('segundo_nombre'),
-            primer_apellido: formData.get('primer_apellido'),
-            segundo_apellido: formData.get('segundo_apellido'),
-            documento: formData.get('documento'),
-            edad: formData.get('edad')
+            primer_nombre: valores.primer_nombre,
+            segundo_nombre: valores.segundo_nombre,
+            primer_apellido: valores.primer_apellido,
+            segundo_apellido: valores.segundo_apellido,
+            documento: valores.documento,
+            edad: valores.edad,
         };
-        
-
-        const via = formData.get('via');
-        const primer_numero = formData.get('primer_numero');
+        const via = direccion.via;
+        const primer_numero = direccion.primer_numero;
         const cardinalidad = formData.get('cardinalidad');
-        const segundo_numero = formData.get('segundo_numero');
-        const tercero_numero = formData.get('tercero_numero');
+        const segundo_numero = direccion.segundo_numero;
+        const tercero_numero = direccion.tercero_numero;
 
         const vivienda = {
             nombre_municipio: formData.get('nombre_municipio'),
@@ -184,14 +211,26 @@ function PersonaForm(props) {
         
         
         //validacion
-        if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido || !vivienda.nombre_municipio) {
-            //console.log(vivienda);
-            setErrorMessage(
-                <div className="alert alert-warning" role="alert">
-                    Todos los campos con * son requeridos
-                </div>
-            )
-            return;
+        if (!props.persona.id_persona) {
+            if (!persona.documento || !persona.edad || !persona.primer_nombre || !persona.primer_apellido || !vivienda.nombre_municipio) {
+                
+                setErrorMessage(
+                    <div className="alert alert-warning" role="alert">
+                        Todos los campos con * son requeridos
+                    </div>
+                )
+                return;
+            }
+        } else {
+            if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido) {
+                //console.log(vivienda);
+                setErrorMessage(
+                    <div className="alert alert-warning" role="alert">
+                        Todos los campos con * son requeridos
+                    </div>
+                )
+                return;
+            }
         }
 
         const edad = parseInt(persona.edad)
@@ -206,7 +245,7 @@ function PersonaForm(props) {
         
         if (props.persona.id_persona) {
             // editar persona
-            fetch("https://lab-crud-v6r1.onrender.com/personas/" + props.persona.id_persona, {
+            fetch("http://localhost:4000/personas/" + props.persona.id_persona, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -239,7 +278,7 @@ function PersonaForm(props) {
         else {
 
         //crear nueva persona
-        fetch("https://lab-crud-v6r1.onrender.com/personas", {
+        fetch("http://localhost:4000/personas", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -294,7 +333,7 @@ function PersonaForm(props) {
                         {props.persona.id_persona ? (
                         <input readOnly className="form-control-plaintext" name="documento" defaultValue={props.persona.documento} />
                         ) : (
-                        <input className="form-control" name="documento" defaultValue={props.persona.documento} />
+                        <input className="form-control" name="documento" defaultValue={props.persona.documento} onChange={handleInputChange}/>
                         )}
                         </div>
                 </div>
@@ -303,7 +342,7 @@ function PersonaForm(props) {
                     <label className="col-sm-4 col-form-label">Edad*</label>
                     <div className="col-sm-8">
                         <input className="form-control" name="edad"
-                        defaultValue={props.persona.edad}/>
+                        defaultValue={props.persona.edad} onChange={handleInputChange}/>
                     </div>
                 </div>
 
@@ -311,7 +350,7 @@ function PersonaForm(props) {
                     <label className="col-sm-4 col-form-label">Primer nombre*</label>
                     <div className="col-sm-8">
                         <input className="form-control" name="primer_nombre"
-                        defaultValue={props.persona.primer_nombre} />
+                        defaultValue={props.persona.primer_nombre} onChange={handleInputChange}/>
                     </div>
                 </div>
 
@@ -319,7 +358,7 @@ function PersonaForm(props) {
                     <label className="col-sm-4 col-form-label">Segundo nombre</label>
                     <div className="col-sm-8">
                         <input className="form-control" name="segundo_nombre"
-                        defaultValue={props.persona.segundo_nombre} />
+                        defaultValue={props.persona.segundo_nombre} onChange={handleInputChange}/>
                     </div>
                 </div>
 
@@ -327,7 +366,7 @@ function PersonaForm(props) {
                     <label className="col-sm-4 col-form-label">Primer apellido*</label>
                     <div className="col-sm-8">
                         <input className="form-control" name="primer_apellido"
-                        defaultValue={props.persona.primer_apellido} />
+                        defaultValue={props.persona.primer_apellido} onChange={handleInputChange}/>
                     </div>
                 </div>
 
@@ -335,7 +374,7 @@ function PersonaForm(props) {
                     <label className="col-sm-4 col-form-label">Segundo apellido</label>
                     <div className="col-sm-8">
                         <input className="form-control" name="segundo_apellido"
-                        defaultValue={props.persona.segundo_apellido} />
+                        defaultValue={props.persona.segundo_apellido} onChange={handleInputChange}/>
                     </div>
                 </div>
 
