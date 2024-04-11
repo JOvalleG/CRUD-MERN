@@ -59,7 +59,7 @@ export const create_persona = async (req, res) => {
 
     res.status(201).json({ message: "¡Persona creada!" });
   }catch (error){
-    if (error.message.includes('Duplicate') && error.message.includes('persona.documento')) {
+    if (error.message.includes('Duplicate') && error.message.includes('documento')) {
       return res.status(400).json({ message: 'El documento ya existe' });
     } else if (error.message.includes("Check constraint 'persona_chk_1' is violated.")) {
       return res.status(400).json({ message: 'La edad ingresada no es válida' });

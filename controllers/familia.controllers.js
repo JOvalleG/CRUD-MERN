@@ -132,7 +132,7 @@ export const create_family = async (req, res) => {
 
         res.status(201).json({ message: "¡Familia creada!" });
     } catch (error) {
-        if (error.message.includes("Duplicate") && error.message.includes("familia.id_cabeza_familia")) {
+        if (error.message.includes("Duplicate") && error.message.includes("id_cabeza_familia")) {
             return res.status(400).json({ message: "Ya existe una familia con este cabeza de familia." });
         } else {
             return res.status(500).json({ message: error.message });
