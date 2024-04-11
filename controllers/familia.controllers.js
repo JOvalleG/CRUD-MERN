@@ -78,6 +78,13 @@ export const create_family = async (req, res) => {
                     [member.documento]
                 );
 
+                const [personaRows_1] = await pool.query(
+                    "SELECT id_cabeza_familia FROM Familia WHERE id_cabeza_familia = ?",
+                    [personaRows[0].id_persona]
+                );
+                if (personaRows_1.length != 0) {
+                    return res.status(404).json({ message: `La persona con el documento ${member.documento} ya es cabeza de familia.` });
+                }
                 if (personaRows.length === 0) {
                     return res.status(404).json({ message: `No hay una persona registrada con el documento ${member.documento}` });
                 }
@@ -125,7 +132,11 @@ export const create_family = async (req, res) => {
 
         res.status(201).json({ message: "¡Familia creada!" });
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        if (error.message.includes("Duplicate") && error.message.includes("familia.id_cabeza_familia")) {
+            return res.status(400).json({ message: "Ya existe una familia con este cabeza de familia." });
+        } else {
+            return res.status(500).json({ message: error.message });
+        }
     }
 };
 
@@ -171,6 +182,8 @@ export const update_family = async (req, res) => {
             [cabeza_familia]
         );
 
+        console.log(personaRows)
+
         if (personaRows.length === 0) {
             return res.status(404).json({ message: "El documento de cabeza de familia no está registrado." });
         }
@@ -213,7 +226,6 @@ export const update_family = async (req, res) => {
 export const create_family_update = async (req) => {
     try {
         const { cabeza_familia, family_members } = req.body;
-        console.log(family_members)
         // Verificar que la persona con el documento del cabeza de familia exista y obtener su id_persona
         const [personaRows] = await pool.query(
             "SELECT id_persona FROM Persona WHERE documento = ?",
@@ -221,7 +233,6 @@ export const create_family_update = async (req) => {
         );
 
         const id_persona = personaRows[0].id_persona;
-        console.log(id_persona);
         // Crear una nueva familia usando el id del cabeza de familia
         await pool.query(
             "UPDATE Familia SET id_cabeza_familia = ? WHERE id_familia = ?",

@@ -54,7 +54,7 @@ function FamiliaLista(props) {
         }
         Swal.fire({
           title: "<strong>¡Borrado correcto!</strong>",
-          html: "<i>Se ha eliminado el familia con éxito</i>",
+          html: "<i>Se ha eliminado la familia con éxito</i>",
           icon: "success",
           timer: 4000,
         });

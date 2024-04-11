@@ -109,7 +109,17 @@ export const createPropietario = async (req, res) => {
             // Send success response
             res.status(201).json({ message: "¡La persona ha sido registrada como propietaria de la vivienda!" });
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error.message.includes("Duplicate") && error.message.includes('propietario.id_vivienda')){
+                return res.status(409).json({ message: "Ya existe un propietario registrado para esta vivienda." });
+            } else if (error.message.includes("Duplicate") && error.message.includes('propietario.PRIMARY')){
+                return res.status(409).json({ message: "Ya existe este registro." });
+            } else if (error.message.includes("CONSTRAINT") && error.message.includes('id_vivienda')){
+                return res.status(409).json({ message: "No existe esta propiedad." });
+            }
+            
+            else{
+                return res.status(500).json({ message: error.message });
+            }
         }
 }
 

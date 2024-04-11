@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Swal from 'sweetalert2'
 
 function Salud() {
     const [content, setContent] = useState(<SaludLista showForm={showForm} />);
@@ -49,6 +50,13 @@ function SaludLista(props) {
             if (!response.ok) {
                 throw new Error("Ha ocurrido un error");
             }
+            Swal.fire({
+                title:"<strong>¡Borrado correcto!</strong>",
+                html: "<i>Se ha eliminado el registro de salud con éxito</i>",
+                icon: 'success',
+                timer: 4000
+            })
+            fetchSalud()
             return response.json();
         })
         .then(data => fetchSalud())
@@ -129,6 +137,12 @@ function SaludForm(props) {
                 if (!response.ok) {
                     throw new Error("Ha ocurrido un error");
                 }
+                Swal.fire({
+                    title:"<strong>¡Actualización correcta!</strong>",
+                    html: "<i>¡Registro de salud actualizado exitosamente!</i>",
+                    icon: 'success',
+                    timer: 4000
+                })
                 return response.json()
             })
             .then(data => props.showList())
@@ -145,10 +159,24 @@ function SaludForm(props) {
             },
             body: JSON.stringify(salud)
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
+                const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Creación incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
                 throw new Error("Ha ocurrido un error");
             }
+            Swal.fire({
+                title:"<strong>¡Creación correcta!</strong>",
+                html: `<i>¡Se ha creado el registro de salud con documento ${salud.documento} con éxito!</i>`,
+                icon: 'success',
+                timer: 5000
+            })
+            props.showList()
             return response.json()
         })
         .then(data => props.showList())
@@ -258,12 +286,15 @@ function SaludForm(props) {
                 </div>
 
                 <div className="row">
-                    <div className="offset-sm-4 col-sm-4 d-grid">
-                        <button type="submit" className="btn btn-primary me-2">Crear</button>
-                    </div>
-                
                     <div className="col-sm-4 d-grid">
-                        <button onClick={() => props.showList()} type="button" className="btn btn-secondary me-2">Cancelar</button>
+                        {props.salud.id_salud ? 
+                        <button type="submit" className="btn btn-primary me-2">Editar</button>
+                        : 
+                        <button type="submit" className="btn btn-primary me-2">Crear</button>
+                        }
+                    </div>
+                    <div className="offset-sm-4 col-sm-4 d-grid">
+                    <button onClick={() => props.showList()} type="button" className="btn btn-secondary me-2">Cancelar</button>
                     </div>
                 </div>
 
