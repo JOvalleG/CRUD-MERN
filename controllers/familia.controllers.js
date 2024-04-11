@@ -174,6 +174,7 @@ export const delete_family = async (req, res) =>{
 }
 
 export const update_family = async (req, res) => {
+    console.log("update_family")
     try {
         const { cabeza_familia, family_members } = req.body;
 
@@ -182,17 +183,24 @@ export const update_family = async (req, res) => {
             [cabeza_familia]
         );
 
-        console.log(personaRows)
-
         if (personaRows.length === 0) {
             return res.status(404).json({ message: "El documento de cabeza de familia no está registrado." });
+        }
+
+        const [existingFamilyRows] = await pool.query(
+            "SELECT id_familia FROM Familia WHERE id_cabeza_familia = ? AND id_familia != ?",
+            [personaRows[0].id_persona, req.params.id]
+        );
+
+        if (existingFamilyRows.length > 0) {
+            return res.status(400).json({ message: "El documento de cabeza de familia ya está registrado como cabeza de familia en otra familia." });
         }
 
         const [personaRows_1] = await pool.query(
             "SELECT id_familia FROM Familia WHERE id_familia = ?",
             [req.params.id]
         );
-
+        
         if (personaRows_1.length === 0) {
             return res.status(404).json({ message: "No existe esta familia." });
         }
@@ -206,6 +214,15 @@ export const update_family = async (req, res) => {
 
                 if (personaRows.length === 0) {
                     return res.status(404).json({ message: `No hay una persona registrada con el documento ${member.documento}` });
+                }
+
+                const [existingFamilyRows] = await pool.query(
+                    "SELECT id_familia FROM Familia WHERE id_cabeza_familia = ? AND id_familia != ?",
+                    [personaRows[0].id_persona, req.params.id]
+                );
+        
+                if (existingFamilyRows.length > 0) {
+                    return res.status(400).json({ message: `El documento ${member.documento} ya está registrado como cabeza de familia en otra familia.` });
                 }
             }
         } else {
