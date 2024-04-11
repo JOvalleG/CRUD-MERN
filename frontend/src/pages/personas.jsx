@@ -120,17 +120,32 @@ function PersonaForm(props) {
         primer_numero: '',
         cardinalidad: '',
         segundo_numero: '',
-        tercer_numero: '',
+        tercero_numero: '',
     })
 
-    const [valores, setValores] = useState({
-        documento: '',
-        edad: '',
-        primer_nombre: '',
-        segundo_nombre: '',
-        primer_apellido: '',
-        segundo_apellido: ''
-    })
+    const [valores, setValores] = useState(() => {
+        const initialValores = {
+            documento: '',
+            edad: '',
+            primer_nombre: '',
+            segundo_nombre: '',
+            primer_apellido: '',
+            segundo_apellido: ''
+        };
+
+        if (props.persona) {
+            return {
+                documento: props.persona.documento || initialValores.documento,
+                edad: props.persona.edad || initialValores.edad,
+                primer_nombre: props.persona.primer_nombre || initialValores.primer_nombre,
+                segundo_nombre: props.persona.segundo_nombre || initialValores.segundo_nombre,
+                primer_apellido: props.persona.primer_apellido || initialValores.primer_apellido,
+                segundo_apellido: props.persona.segundo_apellido || initialValores.segundo_apellido
+            };
+        } else {
+            return initialValores;
+        }
+    });
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -207,7 +222,7 @@ function PersonaForm(props) {
                 return;
             }
         } else {
-            if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido || !vivienda.nombre_municipio) {
+            if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido) {
                 //console.log(vivienda);
                 setErrorMessage(
                     <div className="alert alert-warning" role="alert">
