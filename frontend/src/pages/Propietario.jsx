@@ -136,8 +136,15 @@ function PropietarioForm(props) {
                 },
                 body: JSON.stringify(propietario)
             })
-            .then(response => {
+            .then(async response => {
                 if (!response.ok) {
+                    const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Actualización incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
                     throw new Error("Ha ocurrido un error");
                 }
                 Swal.fire({
@@ -166,7 +173,7 @@ function PropietarioForm(props) {
             if (!response.ok) {
                 const message = await response.json();
                     Swal.fire({
-                        title:"<strong>¡Actualización incorrecta!</strong>",
+                        title:"<strong>¡Creación incorrecta!</strong>",
                         html: `<i>${message.message}</i>`,
                         icon: 'error',
                         timer: 4000

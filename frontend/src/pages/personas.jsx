@@ -50,6 +50,12 @@ function PersonaLista(props) {
             if (!response.ok) {
                 throw new Error("Ha ocurrido un error");
             }
+            Swal.fire({
+                title: "<strong>¡Borrado correcto!</strong>",
+                html: "<i>Se ha eliminado la persona con éxito</i>",
+                icon: "success",
+                timer: 4000,
+              });
             return response.json();
         })
         .then(data => fetchPersona())
@@ -256,10 +262,10 @@ function PersonaForm(props) {
                 html: "<i>¡Se ha creado a la persona con éxito!</i>",
                 icon: 'success',
                 timer: 4000
-            })
+            });
             return response.json()
         })
-        .then(data => props.showList())
+        .then((data) => props.showList())
         .catch((error) => console.log("Ha ocurrido un error", error)
         );
         }

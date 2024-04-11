@@ -29,7 +29,7 @@ export const update_persona = async (req, res) => {
     update_hogar(req, res, req.params.id);
 
     //Si existe retorna un mensaje de éxito al front.
-    res.json({message : "Los datos de la persona con documento "+req.params.id.toString()+" han sido modificados."});
+    res.status(200).json({message : "Los datos de la persona con documento "+req.params.id.toString()+" han sido modificados."});
     
   }catch (error){
     return res.status(500).json({message : error.message});
@@ -58,8 +58,15 @@ export const create_persona = async (req, res) => {
     // Revisar la información del hogar
     update_hogar(req, res, new_persona[0].id_persona);
 
+    res.status(201).json({ message: "¡Persona creada!" });
   }catch (error){
-    return res.status(500).json({message : error.message});
+    if (error.message.includes('Duplicate') && error.message.includes('persona.documento')) {
+      return res.status(400).json({ message: 'El documento ya existe' });
+    } else if (error.message.includes("Check constraint 'persona_chk_1' is violated.")) {
+      return res.status(400).json({ message: 'La edad ingresada no es válida' });
+    } else {
+      return res.status(500).json({message : error.message});
+    }
   }
 }
 
@@ -80,7 +87,7 @@ const update_hogar = async (req, res, id_persona) => {
     //Si no existe se crea la nueva vivienda
     //console.log("vivienda", result_vivienda);
     //if(check_existence(res, result_vivienda.length, "") === false){
-    if (resul_vivienda.length === 0) {
+    if (result_vivienda.length === 0) {
       await pool.query(
         "INSERT INTO Vivienda(id_municipio, direccion) VALUES (?, ?)",
         [id_municipio[0].id_municipio, req.body.vivienda.direccion]
@@ -92,7 +99,7 @@ const update_hogar = async (req, res, id_persona) => {
       );
       //console.log(new_vivienda);
       //Usando la id de la nueva vivienda creada, se modifica el id_vivienda dentro de persona
-      var result_hogar_persona = await pool.query(
+      await pool.query(
         "UPDATE Persona SET id_vivienda = ? WHERE id_persona = ?",
         [new_vivienda[0].id_vivienda, id_persona]
       );
@@ -100,7 +107,7 @@ const update_hogar = async (req, res, id_persona) => {
     }
 
     //Si existe, se modifica el id_vivienda dentro de persona
-    var result_hogar_persona = await pool.query(
+    await pool.query(
       "UPDATE Persona SET id_vivienda = ? WHERE id_persona = ?",
       [result_vivienda[0].id_vivienda, id_persona]
     );
