@@ -101,7 +101,7 @@ export const create_family = async (req, res) => {
         );
 
         // Obtener el id_familia recién insertado
-        const [id_familia] = await pool.query("SELECT id_familia FROM familia WHERE id_cabeza_familia = ?", [id_persona])
+        const [id_familia] = await pool.query("SELECT id_familia FROM Familia WHERE id_cabeza_familia = ?", [id_persona])
 
         // Verificar si family_members tiene la propiedad 'members' y es un array
         if (family_members && Array.isArray(family_members.members)) {
@@ -240,7 +240,7 @@ export const create_family_update = async (req) => {
         );
 
         // Obtener el id_familia recién insertado
-        const [id_familia] = await pool.query("SELECT id_familia FROM familia WHERE id_cabeza_familia = ?", [id_persona])
+        const [id_familia] = await pool.query("SELECT id_familia FROM Familia WHERE id_cabeza_familia = ?", [id_persona])
 
         // Verificar si family_members tiene la propiedad 'members' y es un array
         if (family_members && Array.isArray(family_members.members)) {
