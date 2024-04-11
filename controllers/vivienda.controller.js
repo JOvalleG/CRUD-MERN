@@ -78,7 +78,11 @@ export const eliminarVivienda = async (req, res) => {
         }
         return res.status(204).json({message: "¡Registro de vivienda eliminado exitosamente!"});
     } catch (error) {
-        return res.status(500).json({message: error.message})
+        if (error.message.includes("CONSTRAINT") && error.message.includes("persona_ibfk_2")) {
+            return res.status(400).json({message: "No se pueden eliminar la vivienda porque hay personas habitando en ella. Primero cambia la vivienda de esas personas"});
+        } else {
+            return res.status(500).json({message: error.message})
+        }
     }
     
 }

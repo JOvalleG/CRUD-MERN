@@ -45,22 +45,33 @@ export const getMunicipio = async (req, res) => {
 export const updateMunicipio = async (req, res) => {
     try {
         // Primero, busca el id_persona utilizando el documento del gobernador
-        const gobernador = await pool.query("SELECT * FROM Persona WHERE documento = ?", [req.body.documento]);
-        const idPersonaGobernador = gobernador[0][0].id_persona;
-        const municipioPersona = await pool.query("SELECT Vivienda.*, Persona.* FROM Vivienda INNER JOIN Persona ON Vivienda.id_vivienda = Persona.id_vivienda WHERE Persona.id_persona = ?", [idPersonaGobernador]);
-        if(municipioPersona[0][0].id_municipio != req.params.id){
-            return res.status(400).json({message:"La persona que se quiere añadir como gobernador no vive en el municipio."})
-        }
-
+        if (req.body.documento === '') {
+            console.log("aqui")
+            await pool.query("UPDATE Municipio SET nombre_municipio = ?, departamento = ? WHERE id_municipio = ?",
+            [
+                req.body.nombre_municipio,
+                req.body.departamento,
+                req.params.id
+            ]);
+        } else {
+            const gobernador = await pool.query("SELECT * FROM Persona WHERE documento = ?", [req.body.documento]);
+            if (gobernador[0].length === 0) {
+                return res.status(400).json({message: `No existe una persona con el documento ${req.body.documento}`});
+            }
+            const idPersonaGobernador = gobernador[0][0].id_persona;
+            const municipioPersona = await pool.query("SELECT Vivienda.*, Persona.* FROM Vivienda INNER JOIN Persona ON Vivienda.id_vivienda = Persona.id_vivienda WHERE Persona.id_persona = ?", [idPersonaGobernador]);
+            if(municipioPersona[0][0].id_municipio != req.params.id){
+                return res.status(400).json({message:"La persona que se quiere añadir como gobernador no vive en el municipio."})
+            }
         // Ahora puedes realizar la actualización del municipio utilizando el id_persona del gobernador
-        const result = await pool.query("UPDATE Municipio SET nombre_municipio = ?, departamento = ?, id_gobernador = ? WHERE id_municipio = ?",
+        await pool.query("UPDATE Municipio SET nombre_municipio = ?, departamento = ?, id_gobernador = ? WHERE id_municipio = ?",
             [
                 req.body.nombre_municipio,
                 req.body.departamento,
                 idPersonaGobernador,
                 req.params.id
             ]);
-
+        }
         return res.status(200).json({message: "¡Registro de municipio actualizado exitosamente!"});
     } catch (error) {
         if (error.message === "Duplicate entry '1' for key 'municipio.id_gobernador'") {
@@ -84,28 +95,41 @@ export const getMunicipiosDepto = async (req, res) => {
 
 export const createMunicipio = async (req, res) => {
     try {
-        const {nombre_municipio,departamento,documento} = req.body;
-        const id_persona_query = await pool.query('SELECT id_persona FROM Persona WHERE documento = ?', [documento]);
-        if (id_persona_query[0].length === 0) {
-            return res.status(404).json({ message: "No existe una persona con el documento ingresado." });
-        }else{
-            const id_persona = id_persona_query[0][0]["id_persona"]
-            const existingGobernadorInstance = await pool.query('SELECT id_gobernador FROM Municipio WHERE id_gobernador = ?', [id_persona]);
-            
-            if (existingGobernadorInstance[0].length > 0) {
-                return res.status(400).json({ message: "Esta persona ya es Gobernador de otro municipio" });
+        const {nombre_municipio,departamento} = req.body;
+        const id_persona = null;
+        
+        // Verificar si ya existe un municipio con el mismo nombre en el mismo departamento
+        const existingMunicipio = await pool.query(
+            'SELECT * FROM Municipio WHERE nombre_municipio = ? AND departamento = ?',
+            [nombre_municipio, departamento]
+        );
+        if (existingMunicipio[0].length > 0) {
+            return res.status(400).json({ message: `Ya existe el municipio ${nombre_municipio} en el departamento ${departamento}` });
+        }
 
-            }else{
-                pool.query('INSERT INTO Municipio(nombre_municipio, departamento, id_gobernador) VALUES (?, ?, ?)',
+        await pool.query('INSERT INTO Municipio(nombre_municipio, departamento, id_gobernador) VALUES (?, ?, ?)',
                 [
                     nombre_municipio,
                     departamento,
                     id_persona
                 ])
-                return res.send("¡Municipio registrado con éxito!");
-            }
-        }
+        return res.json("¡Municipio registrado con éxito!");
+            
     } catch (error) {
         return res.status(500).json({message: error.message});
     }
+}
+
+export const deleteMunicipio = async (req, res) => {
+    try {
+        const [result] = await pool.query("DELETE FROM Municipio WHERE id_municipio = ?",
+        [req.params.id]);
+        if(result.affectedRows === 0){
+            return res.status(404).json({message: "No existe el registro que se desea eliminar."});
+        }
+        return res.status(204).json({message: "¡Registro eliminado exitosamente!"});
+    } catch (error) {
+        return res.status(500).json({message: "Existen viviendas y personas asignadas a este municipio."})
+    }
+    
 }

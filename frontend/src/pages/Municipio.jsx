@@ -19,23 +19,23 @@ function Municipios() {
 }
 
 function ListaMunicipios(props) {
-    const [municipios, setMunicipios] = useState([])
-    const [municipioFiltrado, setMunicipioFiltrado] = useState('')
-    const [depto, setDepto] = useState('')
+    const [municipios, setMunicipios] = useState([]);
+    const [municipioFiltrado, setMunicipioFiltrado] = useState('');
+    const [depto, setDepto] = useState('');
 
-    function fetchMunicipios (){
+    function fetchMunicipios() {
         fetch('http://localhost:4000/municipio')
-       .then(response => {
-            if(!response.ok) {
-                throw Error(response.statusText)
-            }
-            return response.json()
-       })
-       .then(data => {
-            console.log(data)
-            setMunicipios(data)
-        })
-       .catch(error => console.log(error))
+            .then(response => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                setMunicipios(data);
+            })
+            .catch(error => console.log(error));
     }
 
     useEffect(() => {
@@ -43,46 +43,81 @@ function ListaMunicipios(props) {
     }, []);
 
     const handleDeptoChange = (event) => {
-        setDepto(event.target.value);
+        const value = event.target.value;
+        setDepto(value);
+        buscarDepartamento(value);
     };
-
-    const busquedaDepto = (event) => {
-        event.preventDefault()
-        if (depto === ''){
-            fetchMunicipios();
-            return;
-        }
-        const municipiosFiltrados = municipios.filter(municipio => municipio.departamento === depto);
-        setMunicipios(municipiosFiltrados)
-    }
 
     const handleMunicipioChange = (event) => {
-        setMunicipioFiltrado(event.target.value);
+        const value = event.target.value;
+        setMunicipioFiltrado(value);
+        buscarMunicipios(value);
     };
 
-    const busquedaMunicipio = (event) => {
-        event.preventDefault()
-        if (municipioFiltrado === ''){
+    const buscarDepartamento = (departamento) => {
+        if (!departamento) {
             fetchMunicipios();
             return;
         }
-        const municipiosFiltrados = municipios.filter(municipio => municipio.nombre_municipio === municipioFiltrado);
-        setMunicipios(municipiosFiltrados)
+        const municipiosFiltrados = municipios.filter(m => {
+            return (
+                (!departamento || m.departamento.toLowerCase().includes(departamento.toLowerCase()))
+            );
+        });
+        setMunicipios(municipiosFiltrados);
+    };
+
+    const buscarMunicipios = (municipio) => {
+        if (!municipio) {
+            fetchMunicipios();
+            return;
+        }
+        const municipiosFiltrados = municipios.filter(m => {
+            return (
+                (!municipio || m.nombre_municipio.toLowerCase().includes(municipio.toLowerCase()))
+            );
+        });
+        setMunicipios(municipiosFiltrados);
+    };
+
+    function deleteMunicipio(id) {
+        fetch("http://localhost:4000/municipio/" + id, {
+            method: "DELETE"
+        })
+        .then(async response => {
+            if (!response.ok) {
+                const message = await response.json();
+                Swal.fire({
+                    title:"<strong>¡Atención!</strong>",
+                    html: `<i>${message.message}</i>`,
+                    icon: 'error',
+                    timer: 4000
+                })
+                throw new Error("Ha ocurrido un error");
+            }
+            Swal.fire({
+                title: "<strong>¡Borrado correcto!</strong>",
+                html: "<i>Se ha eliminado el municipio con éxito</i>",
+                icon: "success",
+                timer: 4000,
+              });
+            return response.json();
+        })
+        .then(data => fetchMunicipios())
+        .catch((error) => console.log("Ha ocurrido un error", error));
     }
 
     return (
         <>
-        <h2 className='text-center mb-3'>Lista de Municipios</h2>
-        <button onClick={() => props.showForm({})} className="btn btn-primary me-2">Crear</button>
-        <button onClick={() => fetchMunicipios()} className="btn btn-outline-primary me-2">Refresh</button>
-        <form className="d-flex" onSubmit={busquedaDepto}>
-            <input className="form-control" placeholder="Buscar por departamento" value={depto} onChange={handleDeptoChange} />
-            <button className="btn btn-outline-success" type="submit">Buscar</button>
-        </form>
-        <form className="d-flex" onSubmit={busquedaMunicipio}>
-            <input className="form-control" placeholder="Buscar por municipio" value={municipioFiltrado} onChange={handleMunicipioChange} />
-            <button className="btn btn-outline-success" type="submit">Buscar</button>
-        </form>
+            <h2 className='text-center mb-3'>Lista de Municipios</h2>
+            <button onClick={() => props.showForm({})} className="btn btn-primary me-2">Crear</button>
+            <button onClick={fetchMunicipios} className="btn btn-outline-primary me-2">Refresh</button>
+            <form className="d-flex">
+                <input className="form-control" placeholder="Buscar por departamento" value={depto} onChange={handleDeptoChange} />
+            </form>
+            <form className="d-flex">
+                <input className="form-control" placeholder="Buscar por municipio" value={municipioFiltrado} onChange={handleMunicipioChange} />
+            </form>
             <table className="table">
                 <thead>
                     <tr>
@@ -103,13 +138,14 @@ function ListaMunicipios(props) {
                             <td>{municipio.documento}</td>
                             <td style={{width: "10px", whiteSpace: "nowrap"}}>
                                 <button onClick={() => props.showForm(municipio)} type="button" className='btn btn-primary btn-sm me-2'>Editar</button>
+                                <button onClick={() => deleteMunicipio(municipio.id_municipio)} type="button" className="btn btn-danger btn-sm">Eliminar</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
         </>
-    )
+    );
 }
 
 function FormularioMunicipios(props){
@@ -124,10 +160,10 @@ function FormularioMunicipios(props){
         if (props.municipio.id_municipio) {
 
             //validacion
-            if (!municipio.nombre_municipio || !municipio.departamento || !municipio.documento) {
+            if (!municipio.nombre_municipio || !municipio.departamento ) {
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
-                    Todos los campos son requeridos
+                    Todos los campos con * son requeridos
                 </div>
             )
                 return;
@@ -220,13 +256,13 @@ function FormularioMunicipios(props){
                 </div>
             </div>}
             <div className="row mb-3">
-                <label className="col-sm-4 col-form-label">Nombre</label>
+                <label className="col-sm-4 col-form-label">Nombre*</label>
                 <div className="col-sm-8">
                     <input className="form-control" name="nombre_municipio" defaultValue={props.municipio.nombre_municipio}/>
                 </div>
             </div>
             <div className='row mb-3'>
-                        <label className='col-sm-4 col-form-label'>Departamento</label>
+                        <label className='col-sm-4 col-form-label'>Departamento*</label>
                         <div className='col-sm-8'>
                             <select className='form-select' 
                                 name='departamento'
@@ -258,20 +294,28 @@ function FormularioMunicipios(props){
                             </select>
                         </div>
                     </div>
+
+            {props.municipio.id_municipio &&
             <div className="row mb-3">
                 <label className="col-sm-4 col-form-label">Documento del Gobernador</label>
                 <div className="col-sm-8">
                     <input className="form-control" name="documento" defaultValue={props.municipio.documento}/>
                 </div>
             </div>
+            }
+            
             <div className="row">
-                <div className="offset-sm-4 col-sm-4 d-grid">
-                    <button type="submit" className="btn btn-primary btn-sm me-3">Actualizar</button>
-                </div>
-                <div className="col-sm-4 d-grid">
+                    <div className="col-sm-4 d-grid">
+                        {props.municipio.id_municipio ? 
+                        <button type="submit" className="btn btn-primary me-2">Editar</button>
+                        : 
+                        <button type="submit" className="btn btn-primary me-2">Crear</button>
+                        }
+                    </div>
+                    <div className="offset-sm-4 col-sm-4 d-grid">
                     <button onClick={() => props.showList()} type="button" className="btn btn-secondary me-2">Cancelar</button>
+                    </div>
                 </div>
-            </div>
         </form>
         </div>
         </div>
