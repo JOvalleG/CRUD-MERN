@@ -112,7 +112,9 @@ function PersonaLista(props) {
 }
 
 function PersonaForm(props) {
-    const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState('')
+    const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState(
+        props.persona ? props.persona.departamento : ''
+    )
     const [municipios, setMunicipios] = useState([])
 
     const [direccion, setDireccion] = useState(() => {
@@ -249,7 +251,7 @@ function PersonaForm(props) {
         if (isNaN(edad) || !Number.isInteger(edad) || edad < 0) {
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
-                    Ls edad debe ser un número entero mayor o igual a cero.
+                    La edad debe ser un número entero mayor o igual a cero.
                 </div>
             );
             return;
