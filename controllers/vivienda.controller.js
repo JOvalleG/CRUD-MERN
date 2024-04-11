@@ -49,14 +49,7 @@ export const createVivienda = async (req, res) => {
             return res.status(200).json({ message: "¡Vivienda registrada con éxito!" });
         }  
     } catch (error) {
-        if (error.message.includes("Duplicate") && error.message.includes("id_vivienda")){
-            return res.status(400).json({ message: "Ya existe un propietario para esta vivienda." });
-        } else if (error.message.includes("child row") && error.message.includes("foreign key")){
-            return res.status(400).json({ message: "No existe un registro con este ID de propiedad." });
-        }
-        else {
-            return res.status(500).json({ message: error.message });
-        }
+        return res.status(500).json({ message: error.message });
     }
 }
 
