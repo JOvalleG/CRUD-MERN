@@ -80,7 +80,7 @@ function ListaMunicipios(props) {
     };
 
     function deleteMunicipio(id) {
-        fetch("http://localhost:4000/municipio/" + id, {
+        fetch("https://lab-crud-v6r1.onrender.com/municipio/" + id, {
             method: "DELETE"
         })
         .then(async response => {

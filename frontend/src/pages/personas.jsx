@@ -25,7 +25,7 @@ function PersonaLista(props) {
     const [persona, setPersona] = useState([]);
 
     function fetchPersona() {
-        fetch("http://localhost:4000/personas")
+        fetch("https://lab-crud-v6r1.onrender.com/personas")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Ha ocurrido un error");
@@ -43,7 +43,7 @@ function PersonaLista(props) {
     useEffect(() => fetchPersona(), []);
 
     function deletePersona(id) {
-        fetch("http://localhost:4000/personas/" + id, {
+        fetch("https://lab-crud-v6r1.onrender.com/personas/" + id, {
             method: "DELETE"
         })
         .then(response => {
@@ -165,7 +165,7 @@ function PersonaForm(props) {
     }
 
     function fetchMunicipios (depto){
-        fetch(`http://localhost:4000/municipio/${depto}`)
+        fetch(`https://lab-crud-v6r1.onrender.com/municipio/${depto}`)
        .then(response => {
             if(!response.ok) {
                 throw Error(response.statusText)
@@ -245,7 +245,7 @@ function PersonaForm(props) {
         
         if (props.persona.id_persona) {
             // editar persona
-            fetch("http://localhost:4000/personas/" + props.persona.id_persona, {
+            fetch("https://lab-crud-v6r1.onrender.com/personas/" + props.persona.id_persona, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -278,7 +278,7 @@ function PersonaForm(props) {
         else {
 
         //crear nueva persona
-        fetch("http://localhost:4000/personas", {
+        fetch("https://lab-crud-v6r1.onrender.com/personas", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
