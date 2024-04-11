@@ -42,7 +42,6 @@ export const create_persona = async (req, res) => {
     // Se recibe el json del front
     const persona = req.body.persona;
     const vivienda = req.body.vivienda;
-
     // Se crea un registro con una nueva persona
     const [persona_result] = await pool.query(
       "INSERT INTO Persona(documento, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, edad) VALUES (?, ?, ?, ?, ?, ?)",
