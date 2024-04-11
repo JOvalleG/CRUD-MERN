@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import Swal from 'sweetalert2'
 
 function Vivienda() {
     const [content, setContent] = useState(<ViviendaLista showForm={showForm} />);
@@ -46,10 +46,24 @@ function ViviendaLista(props) {
         fetch("https://lab-crud-v6r1.onrender.com/vivienda/" + id, {
             method: "DELETE"
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
+                const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Eliminación incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 5000
+                    })
                 throw new Error("Ha ocurrido un error");
             }
+            Swal.fire({
+                title:"<strong>¡Borrado exitoso!</strong>",
+                html: "<i>Registro de vivienda eliminado exitosamente</i>",
+                icon: 'success',
+                timer: 4000
+            })
+            fetchVivienda()
             return response.json();
         })
         .then(data => fetchVivienda())
@@ -167,7 +181,6 @@ function ViviendaForm(props) {
             return response.json()
        })
        .then(data => {
-            console.log(data)
             setMunicipios(data)
         })
        .catch(error => console.log(error))
@@ -253,10 +266,8 @@ function ViviendaForm(props) {
             direccion: formData.get('via') + ' ' + formData.get('primer_numero') + ' ' + formData.get('cardinalidad') + ' ' + formData.get('segundo_numero') + ' ' + formData.get('tercero_numero'),
             nombre_municipio: formData.get('nombre_municipio')
         };
-        
         //validacion
-        if (!vivienda.direccion) {
-            console.log("Todos los campos son requeridos");
+        if (!formData.get('via') || !formData.get('primer_numero') || !formData.get('segundo_numero') || !formData.get('tercero_numero')) {
             setErrorMessage(
                 <div className="alert alert-warning" role="alert">
                     Todos los campos son requeridos
@@ -285,6 +296,13 @@ function ViviendaForm(props) {
                 if (!response.ok) {
                     throw new Error("Ha ocurrido un error");
                 }
+                Swal.fire({
+                    title:"<strong>¡Actualización correcta!</strong>",
+                    html: "<i>¡La vivienda se ha actualizado exitosamente!</i>",
+                    icon: 'success',
+                    timer: 4000
+                })
+                props.showList()
                 return response.json()
             })
             .then(data => props.showList())
@@ -301,10 +319,23 @@ function ViviendaForm(props) {
             },
             body: JSON.stringify(vivienda)
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
+                const message = await response.json();
+                    Swal.fire({
+                        title:"<strong>¡Creación incorrecta!</strong>",
+                        html: `<i>${message.message}</i>`,
+                        icon: 'error',
+                        timer: 4000
+                    })
                 throw new Error("Ha ocurrido un error");
             }
+            Swal.fire({
+                title:"<strong>¡Creación correcta!</strong>",
+                html: "<i>¡Se ha creado la vivienda exitosamente!</i>",
+                icon: 'success',
+                timer: 4000
+            })
             return response.json()
         })
         .then(data => props.showList())
