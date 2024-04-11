@@ -118,13 +118,6 @@ function PropietarioForm(props) {
                 </div>
             )
             return;
-        } else {
-            Swal.fire({
-                title:"<strong>No se pudo actualizar</strong>",
-                html: "<i>No se pudo actualizar el propietario</i>",
-                icon: 'error',
-                timer: 4000
-            })
         }
         
         if (props.propietario.id_vivienda) {
