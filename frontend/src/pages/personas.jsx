@@ -115,14 +115,26 @@ function PersonaForm(props) {
     const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState('')
     const [municipios, setMunicipios] = useState([])
 
-    const [direccion, setDireccion] = useState({
+    const [direccion, setDireccion] = useState(() => {
+        const initialValores = {
         via: '',
         primer_numero: '',
         cardinalidad: '',
         segundo_numero: '',
         tercero_numero: '',
+        };
+        if (props.persona) {
+            return {
+                via: props.persona.direccion.split(" ")[0] || initialValores.via,
+                primer_numero: props.persona.direccion.split(" ")[1] || initialValores.primer_numero,
+                cardinalidad: props.persona.direccion.split(" ")[2] || initialValores.cardinalidad,
+                segundo_numero: props.persona.direccion.split(" ")[3] || initialValores.segundo_numero,
+                tercero_numero: props.persona.direccion.split(" ")[4] || initialValores.tercero_numero,
+            }
+        } else {
+            return initialValores;
+        }
     })
-
     const [valores, setValores] = useState(() => {
         const initialValores = {
             documento: '',
@@ -222,7 +234,7 @@ function PersonaForm(props) {
                 return;
             }
         } else {
-            if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido) {
+            if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido || !vivienda.nombre_municipio) {
                 //console.log(vivienda);
                 setErrorMessage(
                     <div className="alert alert-warning" role="alert">
