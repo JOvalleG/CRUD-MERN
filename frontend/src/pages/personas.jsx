@@ -41,7 +41,6 @@ function PersonaLista(props) {
 
     //fetchPersona();
     useEffect(() => fetchPersona(), []);
-
     function deletePersona(id) {
         fetch("https://lab-crud-v6r1.onrender.com/personas/" + id, {
             method: "DELETE"
@@ -61,7 +60,6 @@ function PersonaLista(props) {
         .then(data => fetchPersona())
         .catch((error) => console.log("Ha ocurrido un error", error));
     }
-
     return (
         <>
         <h2 className="text-center mb-3">Lista de Personas</h2>
@@ -79,6 +77,7 @@ function PersonaLista(props) {
                     <th>Segundo apellido</th>
                     <th>Municipio</th>
                     <th>Direccion</th>
+                    <th>id cabeza familia</th>
                     <th>Acción</th>
                 </tr>
             </thead>
@@ -96,6 +95,7 @@ function PersonaLista(props) {
                             <td>{persona.segundo_apellido}</td>
                             <td>{persona.nombre_municipio}</td>
                             <td>{persona.direccion}</td>
+                            <td>{persona.id_cabeza_familia}</td>
                             <td style={{width: "10px", whiteSpace: "nowrap"}}>
                                 <button onClick={() => props.showForm(persona)} type="button" className="btn btn-primary btn-sm me-2">Editar</button>
                                 <button onClick={() => deletePersona(persona.id_persona)} type="button" className="btn btn-danger btn-sm">Eliminar</button>
@@ -125,7 +125,7 @@ function PersonaForm(props) {
         segundo_numero: '',
         tercero_numero: '',
         };
-        if (props.persona) {
+        if (props.persona.direccion) {
             return {
                 via: props.persona.direccion.split(" ")[0] || initialValores.via,
                 primer_numero: props.persona.direccion.split(" ")[1] || initialValores.primer_numero,
@@ -236,11 +236,12 @@ function PersonaForm(props) {
                 return;
             }
         } else {
+            console.log(persona)
             if (!persona.edad || !persona.primer_nombre || !persona.primer_apellido || !vivienda.nombre_municipio) {
                 //console.log(vivienda);
                 setErrorMessage(
                     <div className="alert alert-warning" role="alert">
-                        Todos los campos con * son requeridos
+                        Todos los campos con * son requerido
                     </div>
                 )
                 return;

@@ -4,7 +4,7 @@ export const get_personas = async (req, res) => {
   try {
     // Se hace la query que devuelva todos los datos de todas las personas en la base de datos.
     const [result] = await pool.query(
-      "SELECT * FROM Persona INNER JOIN Vivienda ON Persona.id_vivienda = Vivienda.id_vivienda INNER JOIN Municipio ON Vivienda.id_municipio = Municipio.id_municipio"
+      "SELECT * FROM Persona INNER JOIN Vivienda ON Persona.id_vivienda = Vivienda.id_vivienda INNER JOIN Municipio ON Vivienda.id_municipio = Municipio.id_municipio LEFT JOIN Familia ON Persona.id_familia = Familia.id_familia"
     );
     res.json(result);
   } catch (error) {
