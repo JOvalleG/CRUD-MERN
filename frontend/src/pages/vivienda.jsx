@@ -25,7 +25,7 @@ function ViviendaLista(props) {
     const [vivienda, setVivienda] = useState([]);
 
     function fetchVivienda() {
-        fetch("http://localhost:4000/vivienda")
+        fetch("https://lab-crud-v6r1.onrender.com/vivienda")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Ha ocurrido un error");
@@ -43,7 +43,7 @@ function ViviendaLista(props) {
     useEffect(() => fetchVivienda(), []);
 
     function deleteVivienda(id) {
-        fetch("http://localhost:4000/vivienda/" + id, {
+        fetch("https://lab-crud-v6r1.onrender.com/vivienda/" + id, {
             method: "DELETE"
         })
         .then(async response => {
@@ -173,7 +173,7 @@ function ViviendaForm(props) {
     }
 
     function fetchMunicipios (depto){
-        fetch(`http://localhost:4000/municipio/${depto}`)
+        fetch(`https://lab-crud-v6r1.onrender.com/municipio/${depto}`)
        .then(response => {
             if(!response.ok) {
                 throw Error(response.statusText)
@@ -285,7 +285,7 @@ function ViviendaForm(props) {
         
         if (props.vivienda.id_vivienda) {
             // editar vivienda
-            fetch("http://localhost:4000/vivienda/" + props.vivienda.id_vivienda, {
+            fetch("https://lab-crud-v6r1.onrender.com/vivienda/" + props.vivienda.id_vivienda, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -312,7 +312,7 @@ function ViviendaForm(props) {
         else {
 
         //crear nueva vivienda
-        fetch("http://localhost:4000/vivienda", {
+        fetch("https://lab-crud-v6r1.onrender.com/vivienda", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -345,7 +345,7 @@ function ViviendaForm(props) {
     }
     function handleSumit() {
         console.log(members)
-        /*fetch("http://localhost:4000/familia", {
+        /*fetch("https://lab-crud-v6r1.onrender.com/familia", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

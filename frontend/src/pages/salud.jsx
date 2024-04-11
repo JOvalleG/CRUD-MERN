@@ -25,7 +25,7 @@ function SaludLista(props) {
     const [salud, setSalud] = useState([]);
 
     function fetchSalud() {
-        fetch("http://localhost:4000/salud")
+        fetch("https://lab-crud-v6r1.onrender.com/salud")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Ha ocurrido un error");
@@ -43,7 +43,7 @@ function SaludLista(props) {
     useEffect(() => fetchSalud(), []);
 
     function deleteSalud(id) {
-        fetch("http://localhost:4000/salud/" + id, {
+        fetch("https://lab-crud-v6r1.onrender.com/salud/" + id, {
             method: "DELETE"
         })
         .then(response => {
@@ -126,7 +126,7 @@ function SaludForm(props) {
         
         if (props.salud.id_salud) {
             // editar salud
-            fetch("http://localhost:4000/salud/" + props.salud.id_salud, {
+            fetch("https://lab-crud-v6r1.onrender.com/salud/" + props.salud.id_salud, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -152,7 +152,7 @@ function SaludForm(props) {
         else {
 
         //crear nueva salud
-        fetch("http://localhost:4000/salud", {
+        fetch("https://lab-crud-v6r1.onrender.com/salud", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

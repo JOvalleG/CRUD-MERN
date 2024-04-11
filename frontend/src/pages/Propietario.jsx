@@ -25,7 +25,7 @@ function PropietarioLista(props) {
     const [propietario, setPropietario] = useState([]);
 
     function fetchPropietarios() {
-        fetch("http://localhost:4000/propietario")
+        fetch("https://lab-crud-v6r1.onrender.com/propietario")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Ha ocurrido un error");
@@ -42,7 +42,7 @@ function PropietarioLista(props) {
     useEffect(() => fetchPropietarios(), []);
 
     function deletePropietario(id_vivienda) {
-        fetch("http://localhost:4000/propietario/" + id_vivienda, {
+        fetch("https://lab-crud-v6r1.onrender.com/propietario/" + id_vivienda, {
             method: "DELETE"
         })
         .then(response => {
@@ -129,7 +129,7 @@ function PropietarioForm(props) {
         
         if (props.propietario.id_vivienda) {
             // editar propietario
-            fetch("http://localhost:4000/propietario/" + props.propietario.id_vivienda, {
+            fetch("https://lab-crud-v6r1.onrender.com/propietario/" + props.propietario.id_vivienda, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -162,7 +162,7 @@ function PropietarioForm(props) {
         else {
 
         //crear nuevo propietario
-        fetch("http://localhost:4000/propietario", {
+        fetch("https://lab-crud-v6r1.onrender.com/propietario", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

@@ -23,19 +23,18 @@ function ListaMunicipios(props) {
     const [municipioFiltrado, setMunicipioFiltrado] = useState('');
     const [depto, setDepto] = useState('');
 
-    function fetchMunicipios() {
-        fetch('http://localhost:4000/municipio')
-            .then(response => {
-                if (!response.ok) {
-                    throw Error(response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-                setMunicipios(data);
-            })
-            .catch(error => console.log(error));
+    function fetchMunicipios (){
+        fetch('https://lab-crud-v6r1.onrender.com/municipio')
+       .then(response => {
+            if(!response.ok) {
+                throw Error(response.statusText)
+            }
+            return response.json()
+       })
+       .then(data => {
+            setMunicipios(data)
+        })
+       .catch(error => console.log(error))
     }
 
     useEffect(() => {
@@ -169,7 +168,7 @@ function FormularioMunicipios(props){
                 return;
             }
 
-            fetch("http://localhost:4000/municipio/update/" + props.municipio.id_municipio, {
+            fetch("https://lab-crud-v6r1.onrender.com/municipio/update/" + props.municipio.id_municipio, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -211,7 +210,7 @@ function FormularioMunicipios(props){
                 }
 
             //crear municipio
-            fetch("http://localhost:4000/municipio/", {
+            fetch("https://lab-crud-v6r1.onrender.com/municipio/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
